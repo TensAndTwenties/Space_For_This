@@ -1,0 +1,145 @@
+fileFormatVersion: 2
+guid: 0161c71bdcb265943bd607a72bd7b202
+timeCreated: 1465173435
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: Player_Ship
+    21300002: Bullet_1
+    21300004: Bullet_2
+    21300006: Bullet_3
+    21300008: Bullet_4
+    21300010: Enemy_Ship
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: Player_Ship
+      rect:
+        serializedVersion: 2
+        x: 43
+        y: 311
+        width: 67
+        height: 74
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -33.5, y: 37}
+        - {x: -33.5, y: 22}
+        - {x: -32.5, y: 16}
+        - {x: -30.5, y: 9}
+        - {x: -33.5, y: -10}
+        - {x: -33.5, y: -37}
+        - {x: -18.5, y: -37}
+        - {x: 33.5, y: -10}
+        - {x: 33.5, y: 16}
+        - {x: -17.5, y: 37}
+    - name: Bullet_1
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 337
+        width: 12
+        height: 5
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: Bullet_2
+      rect:
+        serializedVersion: 2
+        x: 146
+        y: 349
+        width: 31
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: Bullet_3
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 359
+        width: 27
+        height: 4
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: Bullet_4
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 337
+        width: 21
+        height: 5
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: Enemy_Ship
+      rect:
+        serializedVersion: 2
+        x: 242
+        y: 320
+        width: 35
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4.5, y: 32}
+        - {x: -17.5, y: 15}
+        - {x: -17.5, y: -18}
+        - {x: 3.5, y: -32}
+        - {x: 17.5, y: -32}
+        - {x: 17.5, y: 32}
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
