@@ -25,13 +25,14 @@ public class FireStream {
     public Projectile projectile { get; set; }
     public Vector3 offset { get; set; }
     public float angleOffset { get; set; }
-    
+    public float spread { get; set; }
 
-    public FireStream(float _fireRate, Projectile _projectile, Vector3 _offset, float _angleOffset = 0) {
+    public FireStream(float _fireRate, Projectile _projectile, Vector3 _offset, float _angleOffset = 0, float _spread = 0) {
         fireRate = _fireRate;
         projectile = _projectile;
         offset = _offset;
         angleOffset = _angleOffset;
+        spread = _spread;
     }
 
 }

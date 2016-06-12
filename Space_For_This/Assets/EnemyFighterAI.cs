@@ -6,10 +6,15 @@ public class EnemyFighterAI : MonoBehaviour {
     Random rand;
     Camera gameCamera;
     Ship ship;
+
+    public float health;
+
+    public string shipName;
+    public float speed;
     // Use this for initialization
     void Awake () {
         gameCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
-        ship = new Ship("EnemyShip", 3);
+        ship = new Ship("EnemyShip", speed);
         generateTarget();
     }
 
@@ -30,4 +35,13 @@ public class EnemyFighterAI : MonoBehaviour {
             transform.position = Vector3.MoveTowards(transform.position, targetVector, step);
         }
 	}
+
+    public void applyDamage(float damage) {
+        health -= damage;
+
+        if (health <= 0)
+        {
+            Destroy(this.gameObject);
+        }
+    }
 }
