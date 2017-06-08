@@ -68,6 +68,7 @@
     <Compile Include="Assets\Explosion.cs" />
     <Compile Include="Assets\ExtensionMethods.cs" />
     <Compile Include="Assets\Module.cs" />
+    <Compile Include="Assets\PlayerState_Controller.cs" />
     <Compile Include="Assets\Player_Controller.cs" />
     <Compile Include="Assets\Projectile.cs" />
     <Compile Include="Assets\Ship.cs" />
