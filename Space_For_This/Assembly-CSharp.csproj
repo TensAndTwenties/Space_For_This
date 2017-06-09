@@ -48,6 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\CameraScript.cs" />
      <Compile Include="Assets\EnemyFighterAI.cs" />
+     <Compile Include="Assets\EnemyStateController.cs" />
      <Compile Include="Assets\Explosion.cs" />
      <Compile Include="Assets\ExtensionMethods.cs" />
      <Compile Include="Assets\FPSDisplay.cs" />

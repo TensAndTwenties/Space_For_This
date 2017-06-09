@@ -17,7 +17,7 @@ public class Explosion : MonoBehaviour {
         if (collider.gameObject.tag == "Enemy")
         {
             GameObject Enemy = collider.gameObject;
-            Enemy.GetComponent<EnemyFighterAI>().applyDamage(damage);
+			Enemy.GetComponent<EnemyFighterAI>().ship.applyDamage(damage);
         }
     }
 

@@ -20,7 +20,7 @@ public class Player_Controller : MonoBehaviour {
 
     // Use this for initialization
     void Awake() {
-        playerShip = new Ship("testShip", 4);
+        playerShip = new Ship("testShip", 50, 4);
         playerShip.weapons[0] = createBasicWeap1();
         playerShip.weapons[1] = createBasicWeap1();
         playerShip.weapons[2] = createBasicWeap2();

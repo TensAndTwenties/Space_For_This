@@ -89,6 +89,7 @@
 -define:CROSS_PLATFORM_INPUT
 'Assets/CameraScript.cs'
 'Assets/EnemyFighterAI.cs'
+'Assets/EnemyStateController.cs'
 'Assets/Explosion.cs'
 'Assets/ExtensionMethods.cs'
 'Assets/FPSDisplay.cs'
