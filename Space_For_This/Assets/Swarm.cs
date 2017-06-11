@@ -6,11 +6,13 @@ public class Swarm {
 	public List<Object> swarmShips { get; set;}
 	public List<SwarmPathAction> swarmActions { get; set;}
 	public Vector3 startingPoint { get; set;}
+	public float spawnVariance { get; set;}
 
-	public Swarm(List<Object> ships, List<SwarmPathAction> actions, Vector3 start){
+	public Swarm(List<Object> ships, List<SwarmPathAction> actions, Vector3 start, float _spawnVariance = 0){
 		this.swarmShips = ships;
 		this.swarmActions = actions;
 		this.startingPoint = start;
+		this.spawnVariance = _spawnVariance;
 	}
 
 	public static Swarm GenerateTestSwarm(){
@@ -22,6 +24,12 @@ public class Swarm {
 			new SwarmPathAction (new SwarmMoveDetails (
 				new Vector3(-4f,5,0)
 				, 6, 1))
+		);
+
+		actions.Add (
+			new SwarmPathAction (new SwarmFireDetails (
+				swarmTargetType.atPlayer
+				, new int[1]  { 0 }, 1))
 		);
 
 		actions.Add (
@@ -37,6 +45,12 @@ public class Swarm {
 		);
 
 		actions.Add (
+			new SwarmPathAction (new SwarmFireDetails (
+				swarmTargetType.atPlayer
+				, new int[1]  { 0 }, 1))
+		);
+
+		actions.Add (
 			new SwarmPathAction (new SwarmMoveDetails (
 				new Vector3(0,9,0)
 				, 6, 1))
@@ -48,7 +62,8 @@ public class Swarm {
 			);
 		}
 
-		return new Swarm (ships, actions, start);
+		float spawnVariance = 0.3f;
+		return new Swarm (ships, actions, start, spawnVariance);
 	}
 }
 
@@ -88,16 +103,17 @@ public class SwarmMoveDetails{
 }
 
 public class SwarmFireDetails{
-	public Vector3 fireTarget { get; set;}
-	public Weapon[] fireWeapons { get; set;}
+	public swarmTargetType targetType { get; set;}
+	public int[] fireWeapons { get; set;}
 	public float fireTargetVariance { get; set;}
 
-	public SwarmFireDetails(Vector3 _fireTarget, Weapon[] _fireWeapons, float _fireTargetVariance = 0)
+	public SwarmFireDetails(swarmTargetType _targetType, int[] _fireWeapons, float _fireTargetVariance = 0)
 	{
-		this.fireTarget = _fireTarget;
+		this.targetType = _targetType;
 		this.fireWeapons = _fireWeapons;
 		this.fireTargetVariance = _fireTargetVariance;
 	}
 }
 
 public enum swarmActionType { move, fire, formation } 
+public enum swarmTargetType { straightAhead, atPlayer}
