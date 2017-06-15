@@ -59,6 +59,7 @@
      <Compile Include="Assets\Ship.cs" />
      <Compile Include="Assets\Swarm.cs" />
      <Compile Include="Assets\SwarmController.cs" />
+     <Compile Include="Assets\UIcontroller.cs" />
      <Compile Include="Assets\Weapon.cs" />
      <None Include="Assets\Standard Assets\Prototyping\Shaders\WorldCoordDiffuse.shader" />
  <Reference Include="UnityEngine.UI">

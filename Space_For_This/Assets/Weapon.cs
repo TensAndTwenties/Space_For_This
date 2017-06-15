@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Weapon : MonoBehaviour
+public class Weapon
 {
     public bool firing;
     public FireStream[] fireStreams;
@@ -15,6 +15,93 @@ public class Weapon : MonoBehaviour
     public Weapon(FireStream[] _fireStreams) {
         fireStreams = _fireStreams;
     }
+
+	public static Weapon createBasicEnemyWeapon(){
+	
+		FireStream[] fireStreams = new FireStream[1];
+
+		GameObject projectilePrefab = Resources.Load("projectile_1") as GameObject;
+		Projectile projectile = projectilePrefab.GetComponent<Projectile>();
+		projectile.prefab = projectilePrefab;
+
+		fireStreams[0] = new FireStream(0.1f, projectile, new Vector3(0f, 0, 0),0);
+
+		Weapon newWeapon = new Weapon(fireStreams);
+
+		return newWeapon;
+
+	}
+
+	public static Weapon createBasicWeap1()
+	{
+
+		FireStream[] fireStreams = new FireStream[2];
+
+		GameObject projectilePrefab = Resources.Load("projectile_1") as GameObject;
+		Projectile projectile = projectilePrefab.GetComponent<Projectile>();
+		projectile.prefab = projectilePrefab;
+
+		fireStreams[0] = new FireStream(0.1f, projectile, new Vector3(-0.3f, 0, 0));
+		fireStreams[1] = new FireStream(0.1f, projectile, new Vector3(0.3f, 0, 0));
+
+		Weapon newWeapon = new Weapon(fireStreams);
+
+		return newWeapon;
+	}
+
+	public static Weapon createBasicWeap2()
+	{
+
+		FireStream[] fireStreams = new FireStream[1];
+
+		GameObject projectilePrefab = Resources.Load("missile_1") as GameObject;
+		Projectile projectile = projectilePrefab.GetComponent<Projectile>();
+		projectile.prefab = projectilePrefab;
+
+		fireStreams[0] = new FireStream(1f, projectile, new Vector3(0, 0, 0));
+
+		Weapon newWeapon = new Weapon(fireStreams);
+
+		return newWeapon;
+	}
+
+	public static Weapon createBasicWeap3()
+	{
+
+		FireStream[] fireStreams = new FireStream[6];
+
+		GameObject projectilePrefab = Resources.Load("projectile_1") as GameObject;
+		Projectile projectile = projectilePrefab.GetComponent<Projectile>();
+		projectile.prefab = projectilePrefab;
+
+		fireStreams[0] = new FireStream(0.2f, projectile, new Vector3(-0.45f, 0, 0),60);
+		fireStreams[1] = new FireStream(0.2f, projectile, new Vector3(-0.45f, 0, 0));
+		fireStreams[2] = new FireStream(0.2f, projectile, new Vector3(-0.45f, 0, 0),30);
+
+		fireStreams[3] = new FireStream(0.2f, projectile, new Vector3(0.45f, 0, 0),60);
+		fireStreams[4] = new FireStream(0.2f, projectile, new Vector3(0.45f, 0, 0));
+		fireStreams[5] = new FireStream(0.2f, projectile, new Vector3(0.45f, 0, 0),30);
+
+		Weapon newWeapon = new Weapon(fireStreams);
+
+		return newWeapon;
+	}
+
+	public static Weapon createBasicWeap4()
+	{
+
+		FireStream[] fireStreams = new FireStream[1];
+
+		GameObject projectilePrefab = Resources.Load("projectile_2_(spread)") as GameObject;
+		Projectile projectile = projectilePrefab.GetComponent<Projectile>();
+		projectile.prefab = projectilePrefab;
+
+		fireStreams[0] = new FireStream(0.1f, projectile, new Vector3(0f, 0, 0),0,4f);
+
+		Weapon newWeapon = new Weapon(fireStreams);
+
+		return newWeapon;
+	}
 }
 
 

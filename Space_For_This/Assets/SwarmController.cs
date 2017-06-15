@@ -19,14 +19,6 @@ public class SwarmController : MonoBehaviour {
 
 		coroutine = SpawnEnemies (testSwarm);
 		StartCoroutine(coroutine);
-		/*
-		foreach (Object enemy in testSwarm.swarmShips) {
-			GameObject newEnemy = Instantiate(enemy) as GameObject;
-			newEnemy.transform.position = spawnVector;
-			newEnemy.GetComponent<EnemyFighterAI>().swarmActions = testSwarm.swarmActions;
-			WaitToSpawn(testSwarm.spawnVariance);
-		}
-		*/	
 
 	}
 

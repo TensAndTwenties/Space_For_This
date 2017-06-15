@@ -22,29 +22,39 @@ public class EnemyFighterAI : MonoBehaviour {
 		ship = new Ship("EnemyShip", health, speed);
 
 		//todo: Move weapons (and abilities?) to loadout object that can be applied to prefabs
-		ship.weapons[0] = Player_Controller.createBasicWeap1();
+		ship.weapons[0] = Weapon.createBasicEnemyWeapon();
     }
 
 	//todo: currently the player and AI ships have the weapon firing code duplicated. Maybe move to its own
 	//place if the firing proves to be similar
 
-	public void fireWeapons(int[] weaponIndexes){
+	public void fireWeapons(SwarmFireDetails details){
+		int[] weaponIndexes = details.fireWeapons;
 		foreach (int weaponIndex in weaponIndexes) {
 			foreach (FireStream fs in ship.weapons[weaponIndex].fireStreams) {
-				//InvokeRepeating("FireProjectile", 0.0F, fs.fireRate);
-				if (fs.currentCooldown <= 0f) {
-					FireProjectile (fs);
+				// NO cooldowns for enemy weapons so we can script whatever we want
+				//if (fs.currentCooldown <= 0f) {
+				FireProjectile (fs, details.targetType);
 					fs.currentCooldown = fs.fireRate;
-				}
+				//}
 			}
 		}
 	}
 
-	public void FireProjectile(FireStream fireStream)
+	public void FireProjectile(FireStream fireStream, swarmTargetType targetType )
 	{
 		GameObject newProjectileObj = Instantiate(fireStream.projectile.prefab) as GameObject;
 		newProjectileObj.transform.position = transform.position + fireStream.offset;
 		newProjectileObj.GetComponent<Projectile>().angle = fireStream.angleOffset;
+		newProjectileObj.GetComponent<Projectile>().enemyProjectile = true;
+		newProjectileObj.GetComponent<Projectile>().targetType = targetType;
+
+
+		if(targetType == swarmTargetType.atPlayer){
+			Vector3 playerTarget = computeFireTarget(fireStream.offset);
+			newProjectileObj.GetComponent<Projectile> ().dumbTarget = playerTarget;
+		}
+
 		if (fireStream.spread > 0f)
 		{
 			newProjectileObj.GetComponent<Projectile>().angle = fireStream.angleOffset + 45 + Random.Range(-fireStream.spread, fireStream.spread);
@@ -91,7 +101,7 @@ public class EnemyFighterAI : MonoBehaviour {
 		} else if (currentAction.actionType == swarmActionType.fire) {
 			//get weapon and fire at target
 
-			fireWeapons (currentAction.fireDetails.fireWeapons);
+			fireWeapons (currentAction.fireDetails);
 			
 
 			if (currentActionPosition == swarmActions.Count - 1) {
@@ -106,6 +116,18 @@ public class EnemyFighterAI : MonoBehaviour {
 				}
 			}
 		}
+	}
+
+	Vector3 computeFireTarget(Vector3 firestreamOffset){
+		Vector3 playerPos = GameObject.Find ("Player").transform.position;
+		Vector3 firingPos = this.gameObject.transform.position; //+ firestreamOffset;
+
+		Vector3 toReturn = -1*(firingPos - playerPos);
+		//toReturn = toReturn + toReturn;
+		//}
+
+
+		return toReturn;
 	}
 
 	void computeMoveTarget(){

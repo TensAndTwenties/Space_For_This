@@ -11,13 +11,15 @@ public class Projectile : MonoBehaviour
     public float spread;
     public float damage;
     public GameObject prefab;
-    private bool enemyProjectile = false;
+    public bool enemyProjectile = false;
     Camera gameCamera;
     public GameObject explosion;
     public bool homing;
     public Vector3 distanceBeforeHome;
     private GameObject homingTarget;
     List<GameObject> targets = new List<GameObject>();
+	public swarmTargetType targetType;
+	public Vector3 dumbTarget;
 
     void Awake()
     {
@@ -42,25 +44,33 @@ public class Projectile : MonoBehaviour
 
     void OnTriggerEnter(Collider collider)
     {
-        if (collider.gameObject.tag == "Enemy")
-        {
-            GameObject Enemy = collider.gameObject;
-            Enemy.GetComponent<EnemyFighterAI>().ship.applyDamage(damage);
+		GameObject target = collider.gameObject;
+		if (target.tag == "Enemy" && !enemyProjectile) {
 
-            if (explosion)
-            {
-                GameObject newExplosion = Instantiate(explosion) as GameObject;
-                newExplosion.transform.position = transform.position;
-            }
+			target.GetComponent<EnemyFighterAI> ().ship.applyDamage (damage);
 
-            Destroy(this.gameObject);
-        }
+			DestroyProjectile ();
+		} else if (target.tag == "Player" && enemyProjectile) {
+
+			target.GetComponent<Player_Controller> ().playerShip.applyDamage (damage);
+
+			DestroyProjectile ();
+		}
     }
+
+	void DestroyProjectile(){
+		if (explosion) {
+			GameObject newExplosion = Instantiate (explosion) as GameObject;
+			newExplosion.transform.position = transform.position;
+		}
+
+		Destroy (this.gameObject);
+	}
 
 
     void Update()
     {
-        if (transform.position.y > gameCamera.GetComponent<CameraScript>().maxY + 1)
+		if (transform.position.y > gameCamera.GetComponent<CameraScript>().maxY + 1 || transform.position.y < gameCamera.GetComponent<CameraScript>().minY - 1)
         {
             Destroy(this.gameObject);
         }
@@ -100,7 +110,13 @@ public class Projectile : MonoBehaviour
             }
         }
         else {
-            this.transform.position = new Vector3(transform.position.x + stepX, transform.position.y + stepY, transform.position.z);
-        }    
+			if (enemyProjectile && targetType == swarmTargetType.straightAhead) {
+				this.transform.position = new Vector3(transform.position.x + stepX, transform.position.y - stepY, transform.position.z);
+			} else if (enemyProjectile && targetType == swarmTargetType.atPlayer){
+				transform.position = Vector3.MoveTowards (transform.position, dumbTarget, stepBase);
+			} else{
+            	this.transform.position = new Vector3(transform.position.x + stepX, transform.position.y + stepY, transform.position.z);
+			}
+		}    
     }
 }
