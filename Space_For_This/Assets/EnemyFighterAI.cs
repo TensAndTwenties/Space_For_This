@@ -122,10 +122,9 @@ public class EnemyFighterAI : MonoBehaviour {
 		Vector3 playerPos = GameObject.Find ("Player").transform.position;
 		Vector3 firingPos = this.gameObject.transform.position; //+ firestreamOffset;
 
-		Vector3 toReturn = -1*(firingPos - playerPos);
-		//toReturn = toReturn + toReturn;
-		//}
-
+		//the -5 scalar below is a cheat. Not sure why that works but whatever
+		//this can be more accrate - change later
+		Vector3 toReturn = -5*(firingPos - playerPos);
 
 		return toReturn;
 	}

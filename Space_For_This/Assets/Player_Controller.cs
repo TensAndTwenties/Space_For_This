@@ -3,10 +3,17 @@ using System.Collections;
 
 public class Player_Controller : MonoBehaviour {
 
-    private enum PlayerDirection {up,down,left,right};
+    //private enum PlayerDirection {up,down,left,right};
+	private enum DodgeDirection
+	{
+		N,S,E,W,NW,SW,NE,SE
+	}
 
     public Ship playerShip;
     Camera gameCamera;
+	public PlayerState currentState = PlayerState.normal;
+	DodgeDirection currentDodgeDirection;
+	Vector3 currentDodgeTarget;
 
     Vector3 shipSize;
     float shipWidth;
@@ -21,6 +28,9 @@ public class Player_Controller : MonoBehaviour {
     // Use this for initialization
     void Awake() {
         playerShip = new Ship("testShip", 200, 4, true);
+		playerShip.dodgeLength = 4;
+		playerShip.dodgeSpeed = 13;
+
         playerShip.weapons[0] = Weapon.createBasicWeap1();
 		playerShip.weapons[1] = Weapon.createBasicWeap1();
 		playerShip.weapons[2] = Weapon.createBasicWeap2();
@@ -46,6 +56,10 @@ public class Player_Controller : MonoBehaviour {
 
         float step = playerShip.shipSpeed * Time.deltaTime; //movement value
 
+		if (currentState == PlayerState.dodging) {
+			step = playerShip.dodgeSpeed * Time.deltaTime; 
+		}
+
         foreach (FireStream fs in playerShip.weapons[0].fireStreams)
         {
             if (fs.currentCooldown > 0)
@@ -57,74 +71,136 @@ public class Player_Controller : MonoBehaviour {
             }
         }
 
-        if (Input.GetKey(KeyCode.Space))
-        {
-            FireWeapon();
+		if (currentState != PlayerState.dodging) {
+			if (Input.GetKey (KeyCode.Space)) {
+				FireWeapon ();
 
-            //previouslyPressed = KeyCode.Space;
-        }
+				//previouslyPressed = KeyCode.Space;
+			}
 
-        if (Input.GetKey(KeyCode.LeftControl))
-        {
-            if (previouslyPressed != KeyCode.LeftControl)
-            {
-                float targetX = Random.Range(gameCamera.GetComponent<CameraScript>().minX, gameCamera.GetComponent<CameraScript>().maxX);
-                float targetY = Random.Range(gameCamera.GetComponent<CameraScript>().minY + 12, gameCamera.GetComponent<CameraScript>().maxY);
-                Vector3 spawnVector = new Vector3(targetX, targetY, 0);
+			if (Input.GetKey (KeyCode.LeftControl)) {
+				if (previouslyPressed != KeyCode.LeftControl) {
+					float targetX = Random.Range (gameCamera.GetComponent<CameraScript> ().minX, gameCamera.GetComponent<CameraScript> ().maxX);
+					float targetY = Random.Range (gameCamera.GetComponent<CameraScript> ().minY + 12, gameCamera.GetComponent<CameraScript> ().maxY);
+					Vector3 spawnVector = new Vector3 (targetX, targetY, 0);
 
-                Object enemyToSpawn = enemies[Random.Range(0, enemies.Length)];
-                GameObject newEnemy = Instantiate(enemyToSpawn) as GameObject;
-                newEnemy.transform.position = spawnVector;
+					Object enemyToSpawn = enemies [Random.Range (0, enemies.Length)];
+					GameObject newEnemy = Instantiate (enemyToSpawn) as GameObject;
+					newEnemy.transform.position = spawnVector;
 
-            }
-        }
+				}
+			}
 
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            previouslyPressed = 0;
-        }
+			if (Input.GetKeyUp (KeyCode.Space)) {
+				previouslyPressed = 0;
+			}
 
-        if (Input.GetKey(KeyCode.Alpha1))
-        {
-            playerShip.weapons[0] = playerShip.weapons[1];
-        }
+			if (Input.GetKey (KeyCode.Alpha1)) {
+				playerShip.weapons [0] = playerShip.weapons [1];
+			}
 
-        if (Input.GetKey(KeyCode.Alpha2))
-        {
-            playerShip.weapons[0] = playerShip.weapons[2];
-        }
+			if (Input.GetKey (KeyCode.Alpha2)) {
+				playerShip.weapons [0] = playerShip.weapons [2];
+			}
 
-        if (Input.GetKey(KeyCode.Alpha3))
-        {
-            playerShip.weapons[0] = playerShip.weapons[3];
-        }
+			if (Input.GetKey (KeyCode.Alpha3)) {
+				playerShip.weapons [0] = playerShip.weapons [3];
+			}
 
-        if (Input.GetKey(KeyCode.Alpha4))
-        {
-            playerShip.weapons[0] = playerShip.weapons[4];
-        }
+			if (Input.GetKey (KeyCode.Alpha4)) {
+				playerShip.weapons [0] = playerShip.weapons [4];
+			}
 
-        if (Input.GetKey(KeyCode.W))
-        {
-            if (transform.position.x >= gameCamera.GetComponent<CameraScript>().minX + step)
-                transform.position = new Vector2(transform.position.x - step, transform.position.y);
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            if(transform.position.x <= gameCamera.GetComponent<CameraScript>().maxX - step)
-                transform.position = new Vector2(transform.position.x + step, transform.position.y);
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            if (transform.position.y >= gameCamera.GetComponent<CameraScript>().minY + step)
-                transform.position = new Vector2(transform.position.x, transform.position.y - step);
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            if (transform.position.y <= gameCamera.GetComponent<CameraScript>().maxY - step)
-                transform.position = new Vector2(transform.position.x, transform.position.y + step);
-        }
+			if (Input.GetKey (KeyCode.W)) {
+				if (transform.position.x >= gameCamera.GetComponent<CameraScript> ().minX + step)
+					transform.position = new Vector2 (transform.position.x - step, transform.position.y);
+			}
+			if (Input.GetKey (KeyCode.S)) {
+				if (transform.position.x <= gameCamera.GetComponent<CameraScript> ().maxX - step)
+					transform.position = new Vector2 (transform.position.x + step, transform.position.y);
+			}
+			if (Input.GetKey (KeyCode.A)) {
+				if (transform.position.y >= gameCamera.GetComponent<CameraScript> ().minY + step)
+					transform.position = new Vector2 (transform.position.x, transform.position.y - step);
+			}
+			if (Input.GetKey (KeyCode.D)) {
+				if (transform.position.y <= gameCamera.GetComponent<CameraScript> ().maxY - step)
+					transform.position = new Vector2 (transform.position.x, transform.position.y + step);
+			}
+			if (Input.GetKey (KeyCode.LeftShift)) {
+				//dodge! Based on which direction keys are currently held
+				if (Input.GetKey (KeyCode.D) && Input.GetKey (KeyCode.W)) {
+					ExecuteDodge (DodgeDirection.NE);
+				} else if (Input.GetKey (KeyCode.D) && Input.GetKey (KeyCode.S)) {
+					ExecuteDodge (DodgeDirection.SE);
+				} else if (Input.GetKey (KeyCode.A) && Input.GetKey (KeyCode.W)) {
+					ExecuteDodge (DodgeDirection.NW);
+				} else if (Input.GetKey (KeyCode.A) && Input.GetKey (KeyCode.A)) {
+					ExecuteDodge (DodgeDirection.SW);
+				} else {
+					if (Input.GetKey (KeyCode.D)) {
+						ExecuteDodge (DodgeDirection.E);
+					}
+					if (Input.GetKey (KeyCode.A)) {
+						ExecuteDodge (DodgeDirection.W);
+					}
+					if (Input.GetKey (KeyCode.W)) {
+						ExecuteDodge (DodgeDirection.N);
+					}
+					if (Input.GetKey (KeyCode.S)) {
+						ExecuteDodge (DodgeDirection.S);
+					}
+				}
+			}
+		} else {
+
+			transform.position = Vector3.MoveTowards (transform.position, currentDodgeTarget, step);
+			if(transform.position == currentDodgeTarget){
+				CeaseDodge ();
+			}
+			//dodging, wait until done
+		}
     }
+
+	private void ExecuteDodge(DodgeDirection direction)
+	{
+		currentState = PlayerState.dodging;
+		currentDodgeDirection = direction;
+		float xyDodgeLength = Mathf.Sqrt((playerShip.dodgeLength*playerShip.dodgeLength)/2);
+		//IEnumerable coroutine = Dodge ();
+
+		switch (direction) {
+		case DodgeDirection.E:
+			currentDodgeTarget = this.gameObject.transform.position + new Vector3 (0, playerShip.dodgeLength);
+			break;
+		case DodgeDirection.N:
+			currentDodgeTarget = this.gameObject.transform.position + new Vector3 (-playerShip.dodgeLength,0);
+			break;
+		case DodgeDirection.W:
+			currentDodgeTarget = this.gameObject.transform.position + new Vector3 (0,-playerShip.dodgeLength);
+			break;
+		case DodgeDirection.S:
+			currentDodgeTarget = this.gameObject.transform.position + new Vector3 (playerShip.dodgeLength,0);
+			break;
+		case DodgeDirection.NE:
+			currentDodgeTarget = this.gameObject.transform.position + new Vector3 (-xyDodgeLength,xyDodgeLength);
+			break;
+		case DodgeDirection.SE:
+			currentDodgeTarget = this.gameObject.transform.position + new Vector3 (xyDodgeLength,xyDodgeLength);
+			break;
+		case DodgeDirection.NW:
+			currentDodgeTarget = this.gameObject.transform.position + new Vector3 (-xyDodgeLength,-xyDodgeLength);
+			break;
+		case DodgeDirection.SW:
+			currentDodgeTarget = this.gameObject.transform.position + new Vector3 (xyDodgeLength,-xyDodgeLength);
+			break;
+		}
+
+	}
+		
+	private void CeaseDodge (){
+		currentState = PlayerState.normal;
+	}
 
     public void FireWeapon()
     {
@@ -157,4 +233,10 @@ public class Player_Controller : MonoBehaviour {
             newProjectileObj.GetComponent<Projectile>().angle = fireStream.angleOffset + 45 + Random.Range(-fireStream.spread, fireStream.spread);
         }
     }
+}
+
+public enum PlayerState
+{
+	normal,
+	dodging
 }

@@ -51,10 +51,11 @@ public class Projectile : MonoBehaviour
 
 			DestroyProjectile ();
 		} else if (target.tag == "Player" && enemyProjectile) {
+			if (!(target.GetComponent<Player_Controller> ().currentState == PlayerState.dodging)) {
+				target.GetComponent<Player_Controller> ().playerShip.applyDamage (damage);
 
-			target.GetComponent<Player_Controller> ().playerShip.applyDamage (damage);
-
-			DestroyProjectile ();
+				DestroyProjectile ();
+			}
 		}
     }
 
@@ -70,7 +71,7 @@ public class Projectile : MonoBehaviour
 
     void Update()
     {
-		if (transform.position.y > gameCamera.GetComponent<CameraScript>().maxY + 1 || transform.position.y < gameCamera.GetComponent<CameraScript>().minY - 1)
+		if (transform.position.y > gameCamera.GetComponent<CameraScript>().maxY + 1 || transform.position.y < gameCamera.GetComponent<CameraScript>().minY - 1 || transform.position.x > gameCamera.GetComponent<CameraScript>().maxX + 1 || transform.position.x < gameCamera.GetComponent<CameraScript>().minX - 1)
         {
             Destroy(this.gameObject);
         }

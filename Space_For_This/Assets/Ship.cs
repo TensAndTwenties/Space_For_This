@@ -9,6 +9,8 @@ public class Ship {
 	public float maxHealth { get; set; }
 	public float currentHealth { get; set; }
 	public bool playerShip { get ; set;}
+	public float dodgeLength { get; set; }
+	public float dodgeSpeed { get; set;}
     // Use this for initialization
 
 	public Ship(string _shipName, float _maxHealth, float _shipSpeed = 0, bool _playerShip = false)
