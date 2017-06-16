@@ -1,17 +1,17 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/EnemyFighterAI.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Projectile.cs">
     <Files>
-      <File FileName="Assets/EnemyFighterAI.cs" Line="125" Column="23" />
-      <File FileName="Assets/Weapon.cs" Line="127" Column="1" />
-      <File FileName="Assets/Player_Controller.cs" Line="31" Column="3" />
-      <File FileName="Assets/Swarm.cs" Line="118" Column="55" />
-      <File FileName="Assets/SwarmController.cs" Line="25" Column="36" />
-      <File FileName="Assets/Ship.cs" Line="37" Column="1" />
+      <File FileName="Assets/EnemyFighterAI.cs" Line="126" Column="44" />
+      <File FileName="Assets/Weapon.cs" Line="23" Column="66" />
+      <File FileName="Assets/Player_Controller.cs" Line="14" Column="9" />
+      <File FileName="Assets/Swarm.cs" Line="59" Column="26" />
+      <File FileName="Assets/SwarmController.cs" Line="21" Column="3" />
+      <File FileName="Assets/Ship.cs" Line="13" Column="38" />
       <File FileName="Assets/CameraScript.cs" Line="1" Column="1" />
       <File FileName="Assets/PlayerState_Controller.cs" Line="1" Column="1" />
       <File FileName="Assets/FPSDisplay.cs" Line="1" Column="1" />
-      <File FileName="Assets/Projectile.cs" Line="116" Column="1" />
+      <File FileName="Assets/Projectile.cs" Line="54" Column="89" />
       <File FileName="Assets/Explosion.cs" Line="1" Column="1" />
       <File FileName="Assets/UIcontroller.cs" Line="27" Column="3" />
       <File FileName="Assets/ExtensionMethods.cs" Line="1" Column="1" />
