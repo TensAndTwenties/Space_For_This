@@ -20,6 +20,9 @@ public class Projectile : MonoBehaviour
     List<GameObject> targets = new List<GameObject>();
 	public swarmTargetType targetType;
 	public Vector3 dumbTarget;
+	float stepBase;
+	float stepY = 0;
+	float stepX = 0;
 
     void Awake()
     {
@@ -76,9 +79,9 @@ public class Projectile : MonoBehaviour
             Destroy(this.gameObject);
         }
 
-        float stepBase = speed * Time.deltaTime;
-        float stepY = stepBase;
-        float stepX = 0;
+        stepBase = speed * Time.deltaTime;
+        stepY = stepBase;
+        stepX = 0;
 
         if (angle != 0)
         {

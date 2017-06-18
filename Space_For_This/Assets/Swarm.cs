@@ -15,7 +15,93 @@ public class Swarm {
 		this.spawnVariance = _spawnVariance;
 	}
 
-	public static Swarm GenerateTestSwarm(){
+//	public static Swarm GenerateSwarmFromPattern(){
+		//generate a swarm from one of several pre-defined patterns
+		//enemyShipName -- selects swarm member type
+		//size -- number of members
+		//spawn variance -- delay between member spawn
+		//move variance -- delay between moves
+		//targetType -- type of targeting pattern - at player, straightahead, etc
+//	}
+
+//	public static Swarm GenerateRandomSwarmWithEnemy(string enemyName, int aggressiveness)
+//	{
+		//generate a random path and random firing pattern using the specified ship.
+		//ensure proper spacing between move points
+		//ensure proper number of firings via aggressiveness variable - controls firing vs. move actions
+//	}
+
+	public static Swarm GenerateFigureEight(string enemy, int size, float moveSpeed, float moveVariance, float spawnVariance){
+		List<SwarmPathAction> actions = new List<SwarmPathAction> ();
+		List<Object> ships = new List<Object> ();
+		Vector3 start = new Vector3 (-7, 11, 0);
+
+		actions.Add (
+			new SwarmPathAction (new SwarmMoveDetails (
+				new Vector3(-4f,5,0)
+				, moveSpeed, moveVariance))
+		);
+
+		actions.Add (
+			new SwarmPathAction (new SwarmFireDetails (
+				swarmTargetType.atPlayer
+				, new int[1]  { 0 }, 1))
+		);
+
+		actions.Add (
+			new SwarmPathAction (new SwarmMoveDetails (
+				new Vector3(-2f,2.5f,0)
+				, moveSpeed, moveVariance))
+		);
+		actions.Add (
+			new SwarmPathAction (new SwarmMoveDetails (
+				new Vector3(0,5,0)
+				, moveSpeed, moveVariance))
+		);
+		actions.Add (
+			new SwarmPathAction (new SwarmMoveDetails (
+				new Vector3(2,7.5f,0)
+				, moveSpeed, moveVariance))
+		);
+		actions.Add (
+			new SwarmPathAction (new SwarmMoveDetails (
+				new Vector3(4,5,0)
+				, moveSpeed, moveVariance))
+		);
+
+		actions.Add (
+			new SwarmPathAction (new SwarmFireDetails (
+				swarmTargetType.atPlayer
+				, new int[1]  { 0 }, 1))
+		);
+
+		actions.Add (
+			new SwarmPathAction (new SwarmMoveDetails (
+				new Vector3(2,2.5f,0)
+				, moveSpeed, moveVariance))
+		);
+		actions.Add (
+			new SwarmPathAction (new SwarmMoveDetails (
+				new Vector3(0,5,0)
+				, moveSpeed, moveVariance))
+		);
+		actions.Add (
+			new SwarmPathAction (new SwarmMoveDetails (
+				new Vector3(-2f,7.5f,0)
+				, moveSpeed, moveVariance))
+		);
+
+		for (int i = 0; i < size; i++ ) {
+			ships.Add (
+				Resources.Load (enemy)
+			);
+		}
+
+		return new Swarm (ships, actions, start, spawnVariance);
+	}
+
+
+	public static Swarm GenerateDiamondSwarm(){
 		List<SwarmPathAction> actions = new List<SwarmPathAction> ();
 		List<Object> ships = new List<Object> ();
 		Vector3 start = new Vector3 (-7, 11, 0);

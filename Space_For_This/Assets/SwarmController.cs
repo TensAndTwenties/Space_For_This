@@ -8,7 +8,8 @@ public class SwarmController : MonoBehaviour {
 
 	void Awake () {
 		//make a swarm
-		Swarm testSwarm = Swarm.GenerateTestSwarm ();
+		//Swarm testSwarm = Swarm.GenerateTestSwarm ();
+		Swarm testSwarm = Swarm.GenerateFigureEight ("Enemy1",100,6,1,0.3f);
 
 		if (testSwarm.spawnVariance > 0) {
 			Random rand = new Random ();

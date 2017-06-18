@@ -1,21 +1,22 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Projectile.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/SwarmController.cs">
     <Files>
-      <File FileName="Assets/EnemyFighterAI.cs" Line="126" Column="44" />
-      <File FileName="Assets/Weapon.cs" Line="23" Column="66" />
-      <File FileName="Assets/Player_Controller.cs" Line="14" Column="9" />
-      <File FileName="Assets/Swarm.cs" Line="59" Column="26" />
-      <File FileName="Assets/SwarmController.cs" Line="21" Column="3" />
-      <File FileName="Assets/Ship.cs" Line="13" Column="38" />
+      <File FileName="Assets/EnemyFighterAI.cs" Line="1" Column="1" />
+      <File FileName="Assets/Weapon.cs" Line="1" Column="1" />
+      <File FileName="Assets/Player_Controller.cs" Line="273" Column="24" />
+      <File FileName="Assets/SwarmController.cs" Line="12" Column="64" />
+      <File FileName="Assets/Ship.cs" Line="1" Column="1" />
       <File FileName="Assets/CameraScript.cs" Line="1" Column="1" />
       <File FileName="Assets/PlayerState_Controller.cs" Line="1" Column="1" />
       <File FileName="Assets/FPSDisplay.cs" Line="1" Column="1" />
-      <File FileName="Assets/Projectile.cs" Line="54" Column="89" />
+      <File FileName="Assets/Projectile.cs" Line="1" Column="1" />
       <File FileName="Assets/Explosion.cs" Line="1" Column="1" />
-      <File FileName="Assets/UIcontroller.cs" Line="27" Column="3" />
+      <File FileName="Assets/UIcontroller.cs" Line="1" Column="1" />
       <File FileName="Assets/ExtensionMethods.cs" Line="1" Column="1" />
       <File FileName="Assets/EnemyStateController.cs" Line="1" Column="1" />
+      <File FileName="Assets/Shield.cs" Line="1" Column="1" />
+      <File FileName="Assets/Swarm.cs" Line="77" Column="32" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
