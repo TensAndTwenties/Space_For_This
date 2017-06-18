@@ -22,20 +22,31 @@ public class Player_Controller : MonoBehaviour {
     Object enemyShip1; 
     Object enemyShip2; 
     Object[] enemies = new Object[2];
-    
 
+	public float shipSpeed;
+	public string shipName;
+	public Weapon[] weapons;
+	public float maxHealth;
+	public float dodgeLength;
+	public float dodgeSpeed;
+	public float maxShield;
+	public float shieldRechargeRate;
+	public float shieldRechargeDelay;
 
     // Use this for initialization
     void Awake() {
-        playerShip = new Ship("testShip", 200, 4, true);
-		playerShip.dodgeLength = 4;
-		playerShip.dodgeSpeed = 13;
+		playerShip = new Ship(shipName, maxHealth, shipSpeed, true);
+		playerShip.dodgeLength = dodgeLength;
+		playerShip.dodgeSpeed = dodgeSpeed;
 
         playerShip.weapons[0] = Weapon.createBasicWeap1();
 		playerShip.weapons[1] = Weapon.createBasicWeap1();
 		playerShip.weapons[2] = Weapon.createBasicWeap2();
 		playerShip.weapons[3] = Weapon.createBasicWeap3();
 		playerShip.weapons[4] = Weapon.createBasicWeap4();
+
+		playerShip.shield = new Shield (maxShield, shieldRechargeRate, shieldRechargeDelay);
+
         shipSize = GetComponent<Renderer>().bounds.size;
         shipWidth = shipSize.x;
 
@@ -59,6 +70,8 @@ public class Player_Controller : MonoBehaviour {
 		if (currentState == PlayerState.dodging) {
 			step = playerShip.dodgeSpeed * Time.deltaTime; 
 		}
+
+		UpdateShield ();
 
         foreach (FireStream fs in playerShip.weapons[0].fireStreams)
         {
@@ -233,6 +246,28 @@ public class Player_Controller : MonoBehaviour {
             newProjectileObj.GetComponent<Projectile>().angle = fireStream.angleOffset + 45 + Random.Range(-fireStream.spread, fireStream.spread);
         }
     }
+
+	public void UpdateShield()
+	{
+		//controls sheild recharge and recharge delay updates
+		//if(playerShip.shield.currentRechargeDelay)
+		if (playerShip.shield.currentRechargeDelay == 0 && playerShip.shield.currentShield < playerShip.shield.maxShield) {
+			//recharge
+			if ((playerShip.shield.currentShield += playerShip.shield.rechargeRate) > playerShip.shield.maxShield) {
+				playerShip.shield.currentShield = playerShip.shield.maxShield;
+			} else {
+				playerShip.shield.currentShield += playerShip.shield.rechargeRate;
+			}
+
+			GameObject.Find("Canvas").GetComponent<UIcontroller>().updateShield();
+		} else {
+			if ((playerShip.shield.currentRechargeDelay -= Time.deltaTime) < 0) {
+				playerShip.shield.currentRechargeDelay = 0;
+			} else {
+				playerShip.shield.currentRechargeDelay -= Time.deltaTime;
+			}
+		}
+	}
 }
 
 public enum PlayerState

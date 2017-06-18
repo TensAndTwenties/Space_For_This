@@ -56,6 +56,7 @@
      <Compile Include="Assets\PlayerState_Controller.cs" />
      <Compile Include="Assets\Player_Controller.cs" />
      <Compile Include="Assets\Projectile.cs" />
+     <Compile Include="Assets\Shield.cs" />
      <Compile Include="Assets\Ship.cs" />
      <Compile Include="Assets\Swarm.cs" />
      <Compile Include="Assets\SwarmController.cs" />

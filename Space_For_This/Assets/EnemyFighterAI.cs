@@ -12,16 +12,20 @@ public class EnemyFighterAI : MonoBehaviour {
 	int currentActionPosition;
 	Vector3 currentMoveTarget = Vector3.zero;
 
-    public float health;
+	public float shipSpeed;
+	public string shipName;
+	public Weapon[] weapons;
+	public float maxHealth;
+	public bool playerShip;
+	public float dodgeLength;
+	public float dodgeSpeed;
 
-    public string shipName;
-    public float speed;
     // Use this for initialization
     void Awake () {
         gameCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
-		ship = new Ship("EnemyShip", health, speed);
-
-		//todo: Move weapons (and abilities?) to loadout object that can be applied to prefabs
+		ship = new Ship(shipName, maxHealth, shipSpeed);
+		ship.dodgeSpeed = dodgeSpeed;
+		ship.dodgeLength = dodgeLength;
 		ship.weapons[0] = Weapon.createBasicEnemyWeapon();
     }
 
