@@ -79,7 +79,7 @@ public class Player_Controller : MonoBehaviour {
             {
                 fs.currentCooldown -= Time.deltaTime;
             }
-            else {
+			else if (fs.currentCooldown < 0) {
                 fs.currentCooldown = 0;
             }
         }
@@ -93,14 +93,15 @@ public class Player_Controller : MonoBehaviour {
 
 			if (Input.GetKey (KeyCode.LeftControl)) {
 				if (previouslyPressed != KeyCode.LeftControl) {
-					float targetX = Random.Range (gameCamera.GetComponent<CameraScript> ().minX, gameCamera.GetComponent<CameraScript> ().maxX);
+					//used to spawn enemies for testing
+					/*float targetX = Random.Range (gameCamera.GetComponent<CameraScript> ().minX, gameCamera.GetComponent<CameraScript> ().maxX);
 					float targetY = Random.Range (gameCamera.GetComponent<CameraScript> ().minY + 12, gameCamera.GetComponent<CameraScript> ().maxY);
 					Vector3 spawnVector = new Vector3 (targetX, targetY, 0);
 
 					Object enemyToSpawn = enemies [Random.Range (0, enemies.Length)];
 					GameObject newEnemy = Instantiate (enemyToSpawn) as GameObject;
 					newEnemy.transform.position = spawnVector;
-
+					*/
 				}
 			}
 
