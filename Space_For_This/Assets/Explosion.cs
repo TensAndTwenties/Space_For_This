@@ -12,7 +12,7 @@ public class Explosion : MonoBehaviour {
 	    collider = this.gameObject.GetComponent<SphereCollider>();
     }
 
-    void OnTriggerEnter(Collider collider)
+	void OnTriggerEnter2D(Collider2D collider)
     {
         if (collider.gameObject.tag == "Enemy")
         {

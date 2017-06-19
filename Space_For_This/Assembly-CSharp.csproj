@@ -48,12 +48,10 @@
   <ItemGroup>
      <Compile Include="Assets\CameraScript.cs" />
      <Compile Include="Assets\EnemyFighterAI.cs" />
-     <Compile Include="Assets\EnemyStateController.cs" />
      <Compile Include="Assets\Explosion.cs" />
      <Compile Include="Assets\ExtensionMethods.cs" />
      <Compile Include="Assets\FPSDisplay.cs" />
      <Compile Include="Assets\Module.cs" />
-     <Compile Include="Assets\PlayerState_Controller.cs" />
      <Compile Include="Assets\Player_Controller.cs" />
      <Compile Include="Assets\Projectile.cs" />
      <Compile Include="Assets\Shield.cs" />

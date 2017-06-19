@@ -45,7 +45,7 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter(Collider collider)
+	void OnTriggerEnter2D(Collider2D collider)
     {
 		GameObject target = collider.gameObject;
 		if (target.tag == "Enemy" && !enemyProjectile) {
