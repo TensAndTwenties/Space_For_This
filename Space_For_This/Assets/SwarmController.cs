@@ -11,10 +11,6 @@ public class SwarmController : MonoBehaviour {
 		//Swarm testSwarm = Swarm.GenerateTestSwarm ();
 		Swarm testSwarm = Swarm.GenerateFigureEight ("Enemy1",200,6,1,0.3f);
 
-		if (testSwarm.spawnVariance > 0) {
-			Random rand = new Random ();
-		}
-
 		//instantiate swarm ships
 		Vector3 spawnVector = testSwarm.startingPoint;
 

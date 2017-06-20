@@ -167,12 +167,29 @@ public class Player_Controller : MonoBehaviour {
 				}
 			}
 		} else {
-
+			//if (transform.position.y > gameCamera.GetComponent<CameraScript>().maxY + 1 || transform.position.y < gameCamera.GetComponent<CameraScript>().minY - 1 || transform.position.x > gameCamera.GetComponent<CameraScript>().maxX + 1 || transform.position.x < gameCamera.GetComponent<CameraScript>().minX - 1)
 			transform.position = Vector3.MoveTowards (transform.position, currentDodgeTarget, step);
-			if(transform.position == currentDodgeTarget){
+
+			bool ceaseDodge = false;
+
+			if (transform.position.y > gameCamera.GetComponent<CameraScript> ().maxY + step) {
+				transform.position = new Vector3 (transform.position.x, gameCamera.GetComponent<CameraScript> ().maxY + step);
+				ceaseDodge = true;
+			} else if (transform.position.y < gameCamera.GetComponent<CameraScript> ().minY - step) {
+				transform.position = new Vector3 (transform.position.x, gameCamera.GetComponent<CameraScript> ().minY - step);
+				ceaseDodge = true;
+			} else if (transform.position.x < gameCamera.GetComponent<CameraScript> ().minX - step) {
+				transform.position = new Vector3 (gameCamera.GetComponent<CameraScript> ().minX - step,transform.position.y);
+				ceaseDodge = true;
+			} else if (transform.position.x > gameCamera.GetComponent<CameraScript> ().maxX + step) {
+				transform.position = new Vector3 (gameCamera.GetComponent<CameraScript> ().maxX + step,transform.position.y);
+				ceaseDodge = true;
+			}
+
+			if(transform.position == currentDodgeTarget || ceaseDodge) {
 				CeaseDodge ();
 			}
-			//dodging, wait until done
+				//dodging, wait until done
 		}
     }
 
