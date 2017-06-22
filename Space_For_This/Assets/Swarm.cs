@@ -31,10 +31,32 @@ public class Swarm {
 		//ensure proper number of firings via aggressiveness variable - controls firing vs. move actions
 //	}
 
-	public static Swarm GenerateFigureEight(string enemy, int size, float moveSpeed, float moveVariance, float spawnVariance){
+	public static Swarm GenerateSwarmWithShape(string enemy, int size, float moveSpeed, float moveVariance, float spawnVariance, swarmActionShape shape){
 		List<SwarmPathAction> actions = new List<SwarmPathAction> ();
 		List<Object> ships = new List<Object> ();
 		Vector3 start = new Vector3 (-7, 11, 0);
+
+		switch (shape) {
+		case swarmActionShape.figureEight:
+			actions = FigureEight (moveSpeed, moveVariance);
+			break;
+		case swarmActionShape.diamond:
+			actions = Diamond (moveSpeed, moveVariance);
+			break;
+		}
+
+		for (int i = 0; i < size; i++ ) {
+			ships.Add (
+				Resources.Load (enemy)
+			);
+		}
+
+		return new Swarm (ships, actions, start, spawnVariance);
+	}
+
+	private static List<SwarmPathAction> FigureEight(float moveSpeed, float moveVariance){
+	
+		List<SwarmPathAction> actions = new List<SwarmPathAction> ();
 
 		actions.Add (
 			new SwarmPathAction (new SwarmMoveDetails (
@@ -91,25 +113,16 @@ public class Swarm {
 				, moveSpeed, moveVariance))
 		);
 
-		for (int i = 0; i < size; i++ ) {
-			ships.Add (
-				Resources.Load (enemy)
-			);
-		}
-
-		return new Swarm (ships, actions, start, spawnVariance);
+		return actions;
 	}
 
-
-	public static Swarm GenerateDiamondSwarm(){
+	private static List<SwarmPathAction> Diamond(float moveSpeed, float moveVariance){
 		List<SwarmPathAction> actions = new List<SwarmPathAction> ();
-		List<Object> ships = new List<Object> ();
-		Vector3 start = new Vector3 (-7, 11, 0);
 
 		actions.Add (
 			new SwarmPathAction (new SwarmMoveDetails (
 				new Vector3(-4f,5,0)
-				, 6, 1))
+				, moveSpeed, 1))
 		);
 
 		actions.Add (
@@ -121,13 +134,13 @@ public class Swarm {
 		actions.Add (
 			new SwarmPathAction (new SwarmMoveDetails (
 				new Vector3(0,0,0)
-				, 6, 1))
+				, moveSpeed, 1))
 		);
 
 		actions.Add (
 			new SwarmPathAction (new SwarmMoveDetails (
 				new Vector3(4f,5,0)
-				, 6, 1))
+				, moveSpeed, 1))
 		);
 
 		actions.Add (
@@ -139,17 +152,10 @@ public class Swarm {
 		actions.Add (
 			new SwarmPathAction (new SwarmMoveDetails (
 				new Vector3(0,9,0)
-				, 6, 1))
+				, moveSpeed, 1))
 		);
-
-		for (int i = 0; i < 200; i++ ) {
-			ships.Add (
-				Resources.Load ("Enemy1")
-			);
-		}
-
-		float spawnVariance = 0.3f;
-		return new Swarm (ships, actions, start, spawnVariance);
+			
+		return actions;
 	}
 }
 
@@ -203,3 +209,4 @@ public class SwarmFireDetails{
 
 public enum swarmActionType { move, fire, formation } 
 public enum swarmTargetType { straightAhead, atPlayer}
+public enum swarmActionShape { figureEight, diamond }

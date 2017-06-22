@@ -86,7 +86,7 @@ public class EnemyFighterAI : MonoBehaviour {
 
 			float step = currentAction.moveDetails.moveSpeed * Time.deltaTime;
 
-			if (transform.position == currentMoveTarget) {
+			if (transform.localPosition == currentMoveTarget) {
 				//we're there - move to next action, or start over
 				if (currentActionPosition == swarmActions.Count - 1) {
 					currentAction = swarmActions[0];
@@ -100,7 +100,7 @@ public class EnemyFighterAI : MonoBehaviour {
 					}
 				}
 			} else { 
-				transform.position = Vector3.MoveTowards (transform.position, currentMoveTarget, step);
+				transform.localPosition = Vector3.MoveTowards (transform.localPosition, currentMoveTarget, step);
 			}
 		} else if (currentAction.actionType == swarmActionType.fire) {
 			//get weapon and fire at target
