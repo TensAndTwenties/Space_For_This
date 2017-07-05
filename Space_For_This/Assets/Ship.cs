@@ -45,14 +45,16 @@ public class Ship {
 				}
 
 				shield.resetRechargeDelay ();
-				GameObject.Find("Canvas").GetComponent<UIcontroller>().updateShield();
+				GameObject.Find ("Canvas").GetComponent<UIcontroller> ().updateShield ();
 
 			} else {
 				currentHealth -= damage;
-				GameObject.Find("Canvas").GetComponent<UIcontroller>().updateHealth();
+				GameObject.Find ("Canvas").GetComponent<UIcontroller> ().updateHealth ();
 			}
 
 
+		} else {
+			currentHealth -= damage;
 		}
 	}
 }

@@ -14,11 +14,15 @@ public class SwarmController : MonoBehaviour {
 		//instantiate swarm ships
 		Vector3 spawnVector = testSwarm.startingPoint;
 
+		Swarm parentSwarm = Swarm.GenerateSwarmWithShape ("Enemy1",1,8,1,0.3f,swarmActionShape.diamond);
+
+		spawnTarget.GetComponent<EnemyFighterAI> ().swarmActions = parentSwarm.swarmActions;
+
 		//coroutine = SpawnEnemies (testSwarm);
 		//StartCoroutine(coroutine);
 
-		testSwarm = Swarm.GenerateSwarmWithShape ("Enemy1",100,8,1,0.3f,swarmActionShape.diamond);
-		spawnVector = new Vector3 (-testSwarm.startingPoint.x, testSwarm.startingPoint.y);
+		//testSwarm = Swarm.GenerateSwarmWithShape ("Enemy1",100,8,1,0.3f,swarmActionShape.diamond);
+		//spawnVector = new Vector3 (-testSwarm.startingPoint.x, testSwarm.startingPoint.y);
 
 		coroutine = SpawnEnemies (testSwarm);
 		StartCoroutine(coroutine);
