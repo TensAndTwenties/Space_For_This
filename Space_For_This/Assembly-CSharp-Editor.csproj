@@ -47,7 +47,14 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Editor\CrossPlatformInput\CrossPlatformInputInitialize.cs" />
+     <Compile Include="Assets\LeanTween\Editor\LeanTweenDocumentationEditor.cs" />
      <None Include="Assets\Standard Assets\Prototyping\Shaders\WorldCoordDiffuse.shader" />
+     <None Include="Assets\LeanTween\Examples\Archived\2dUnlitWithFade.shader" />
+     <None Include="Assets\LeanTween\ReadMe.txt" />
+     <None Include="Assets\LeanTween\License.txt" />
+ <Reference Include="Assembly-UnityScript">
+ <HintPath>/Users/Rob/Desktop/Misc/gamedev/Space_For_This/Space_For_This/Library/ScriptAssemblies/Assembly-UnityScript.dll</HintPath>
+ </Reference>
  <Reference Include="UnityEditor.Advertisements">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/Advertisements/Editor/UnityEditor.Advertisements.dll</HintPath>
  </Reference>
@@ -116,6 +123,8 @@
  </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
+      <Project>{B035FCAA-2655-11AB-A6C1-EE8595E75B02}</Project>      <Name>Assembly-CSharp-firstpass</Name>    </ProjectReference>
     <ProjectReference Include="Assembly-CSharp.csproj">
       <Project>{2C500D71-39F1-0A78-3EA9-0013984AAFA1}</Project>      <Name>Assembly-CSharp</Name>    </ProjectReference>
   </ItemGroup>
