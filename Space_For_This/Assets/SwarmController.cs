@@ -5,18 +5,19 @@ using System.Collections.Generic;
 public class SwarmController : MonoBehaviour {
 
 	private IEnumerator coroutine;
-	private GameObject spawnTarget;
+	//private GameObject spawnTarget;
 	void Awake () {
-		spawnTarget = GameObject.Find ("SwarmParent");
+		//spawnTarget = GameObject.Find ("SwarmParent");
 		//make a swarm
-		Swarm testSwarm = Swarm.GenerateSwarmWithShape ("Enemy1",100,6,1,0.3f,swarmActionShape.figureEight);
+		//Swarm testSwarm = Swarm.GenerateSwarmWithShape (shipType.fighter,30,6,1,0.8f,swarmActionShape.diamond);
 
+		Swarm testSwarm = Swarm.GenerateSwarmWithShape (shipType.frigate,1,6,0,0f,swarmActionShape.diamond);
 		//instantiate swarm ships
 		Vector3 spawnVector = testSwarm.startingPoint;
 
-		Swarm parentSwarm = Swarm.GenerateSwarmWithShape ("Enemy1",1,8,1,0.3f,swarmActionShape.diamond);
+		//Swarm parentSwarm = Swarm.GenerateSwarmWithShape ("Enemy1",1,8,1,0.3f,swarmActionShape.diamond);
 
-		spawnTarget.GetComponent<EnemyFighterAI> ().swarmActions = parentSwarm.swarmActions;
+		//spawnTarget.GetComponent<EnemyFighterAI> ().swarmActions = parentSwarm.swarmActions;
 
 		//coroutine = SpawnEnemies (testSwarm);
 		//StartCoroutine(coroutine);
@@ -34,7 +35,6 @@ public class SwarmController : MonoBehaviour {
 		Vector3 spawnVector = testSwarm.startingPoint;
 		foreach (Object enemy in testSwarm.swarmShips) {
 			GameObject newEnemy = Instantiate (enemy) as GameObject;
-			newEnemy.transform.parent = spawnTarget.transform;
 			newEnemy.transform.position = spawnVector;
 			newEnemy.GetComponent<EnemyFighterAI> ().swarmActions = testSwarm.swarmActions;
 			yield return new WaitForSeconds(Random.Range (0f, testSwarm.spawnVariance));

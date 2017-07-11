@@ -20,3 +20,5 @@
 /Users/Rob/Desktop/Misc/gamedev/Space_For_This/Space_For_This/Temp/bin/Debug/Unity.CecilTools.dll
 /Users/Rob/Desktop/Misc/gamedev/Space_For_This/Space_For_This/Temp/bin/Debug/Mono.Cecil.Pdb.dll
 /Users/Rob/Desktop/Misc/gamedev/Space_For_This/Space_For_This/Temp/bin/Debug/Mono.Cecil.Mdb.dll
+/Users/Rob/Desktop/Misc/gamedev/Space_For_This/Space_For_This/Temp/bin/Debug/Assembly-CSharp-firstpass.dll
+/Users/Rob/Desktop/Misc/gamedev/Space_For_This/Space_For_This/Temp/bin/Debug/Assembly-CSharp-firstpass.dll.mdb

@@ -35,7 +35,7 @@ public class Player_Controller : MonoBehaviour {
 
     // Use this for initialization
     void Awake() {
-		playerShip = new Ship(shipName, maxHealth, shipSpeed, true);
+		playerShip = new Ship(shipType.playerShip1, maxHealth, shipSpeed, true);
 		playerShip.dodgeLength = dodgeLength;
 		playerShip.dodgeSpeed = dodgeSpeed;
 

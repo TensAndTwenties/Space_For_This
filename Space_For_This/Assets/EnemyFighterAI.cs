@@ -13,20 +13,50 @@ public class EnemyFighterAI : MonoBehaviour {
 	Vector3 currentMoveTarget = Vector3.zero;
 
 	public float shipSpeed;
-	public string shipName;
+	public shipType shipType;
 	public Weapon[] weapons;
 	public float maxHealth;
 	public bool playerShip;
 	public float dodgeLength;
 	public float dodgeSpeed;
+	public bool isComponent;
+	public int componentCount;
+	public List<Object> components;
 
     // Use this for initialization
     void Awake () {
         gameCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
-		ship = new Ship(shipName, maxHealth, shipSpeed);
+		ship = new Ship(shipType, maxHealth, shipSpeed);
 		ship.dodgeSpeed = dodgeSpeed;
 		ship.dodgeLength = dodgeLength;
-		ship.weapons[0] = Weapon.createBasicEnemyWeapon();
+		ship.weapons [0] = Weapon.createBasicEnemyWeapon ();
+		ship.isComponent = isComponent;
+
+		if (componentCount > 0) {
+			//spawn in components
+
+			if (shipType == shipType.frigate) {
+				//add components
+
+				var values = componentType.GetValues(typeof (componentType));
+				componentType left = componentType.missle;//(componentType) values.GetValue (Random.Range(0,values.Length));
+				componentType right = componentType.missle;//(componentType) values.GetValue (Random.Range(0,values.Length));
+		
+				Object LeftComponent = Resources.Load ("left_" + left.ToString ());
+				components.Add (LeftComponent);
+				Object RightComponent =	Resources.Load ("right_" + right.ToString ());
+				components.Add (RightComponent);
+				
+			}
+
+			foreach (Object component in components) {
+				GameObject newComponent = Instantiate (component) as GameObject;
+				newComponent.GetComponent<EnemyFighterAI> ().isComponent = true;
+				newComponent.transform.parent = this.transform;
+			}
+		}
+
+
     }
 
 	//todo: currently the player and AI ships have the weapon firing code duplicated. Maybe move to its own
@@ -67,56 +97,64 @@ public class EnemyFighterAI : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-
+		
 		if (ship.currentHealth <= 0)
 		{
 			Destroy(this.gameObject);
 		}
 
-		if (currentAction == null){
-			currentAction = swarmActions [0];
-			currentActionPosition = 0;
-		}
-		//execute the current swarm action
-		if (currentAction.actionType == swarmActionType.move) {
-
-			if (currentMoveTarget == Vector3.zero) {
-				computeMoveTarget ();
+		if (!ship.isComponent) {
+			if (currentAction == null) {
+				currentAction = swarmActions [0];
+				currentActionPosition = 0;
 			}
+			//execute the current swarm action
+			if (currentAction.actionType == swarmActionType.move) {
 
-			float step = currentAction.moveDetails.moveSpeed * Time.deltaTime;
+				if (!currentAction.moveDetails.bezier) {
+					if (currentMoveTarget == Vector3.zero) {
+						computeMoveTarget ();
+					}
 
-			if (transform.localPosition == currentMoveTarget) {
-				//we're there - move to next action, or start over
+					float step = currentAction.moveDetails.moveSpeed * Time.deltaTime;
+
+					if (transform.localPosition == currentMoveTarget) {
+						//we're there - move to next action, or start over
+						if (currentActionPosition == swarmActions.Count - 1) {
+							currentAction = swarmActions [0];
+							currentActionPosition = 0;
+							computeMoveTarget ();
+						} else {
+							currentAction = swarmActions [currentActionPosition + 1];
+							currentActionPosition += 1;
+							if (currentAction.actionType == swarmActionType.move) {
+								computeMoveTarget ();
+							}
+						}
+					} else { 
+						transform.localPosition = Vector3.MoveTowards (transform.localPosition, currentMoveTarget, step);
+					}
+				} else {
+					//currentAction = swarmActions [0];
+					LeanTween.move (this.gameObject, currentAction.moveDetails.bezierVectors, 2f);
+				}
+			} else if (currentAction.actionType == swarmActionType.fire) {
+				//get weapon and fire at target
+
+				if (shipType != shipType.dummy) {
+					fireWeapons (currentAction.fireDetails);
+				}
+
 				if (currentActionPosition == swarmActions.Count - 1) {
-					currentAction = swarmActions[0];
+					currentAction = swarmActions [0];
 					currentActionPosition = 0;
 					computeMoveTarget ();
 				} else {
-					currentAction = swarmActions[currentActionPosition + 1];
+					currentAction = swarmActions [currentActionPosition + 1];
 					currentActionPosition += 1;
 					if (currentAction.actionType == swarmActionType.move) {
 						computeMoveTarget ();
 					}
-				}
-			} else { 
-				transform.localPosition = Vector3.MoveTowards (transform.localPosition, currentMoveTarget, step);
-			}
-		} else if (currentAction.actionType == swarmActionType.fire) {
-			//get weapon and fire at target
-
-			fireWeapons (currentAction.fireDetails);
-			
-
-			if (currentActionPosition == swarmActions.Count - 1) {
-				currentAction = swarmActions[0];
-				currentActionPosition = 0;
-				computeMoveTarget ();
-			} else {
-				currentAction = swarmActions[currentActionPosition + 1];
-				currentActionPosition += 1;
-				if (currentAction.actionType == swarmActionType.move) {
-					computeMoveTarget ();
 				}
 			}
 		}

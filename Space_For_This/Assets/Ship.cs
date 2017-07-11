@@ -4,7 +4,7 @@ using System.Collections;
 public class Ship {
 
     public float shipSpeed { get; set;}
-    public string shipName { get; set;}
+	public shipType shipType { get; set; }
     public Weapon[] weapons { get; set; }
 	public float maxHealth { get; set; }
 	public float currentHealth { get; set; }
@@ -12,12 +12,15 @@ public class Ship {
 	public float dodgeLength { get; set; }
 	public float dodgeSpeed { get; set;}
 	public Shield shield { get; set;}
+	public Ship componentLeft { get; set;}
+	public Ship componentRight { get; set;}
+	public bool isComponent { get; set; }
     // Use this for initialization
 
-	public Ship(string _shipName, float _maxHealth, float _shipSpeed = 0, bool _playerShip = false)
+	public Ship(shipType _shipType, float _maxHealth, float _shipSpeed = 0, bool _playerShip = false)
     {
 		shipSpeed = _shipSpeed;
-		shipName = _shipName;
+		shipType = _shipType;
 		maxHealth = _maxHealth;
 		currentHealth = _maxHealth;
         weapons = new Weapon[5];

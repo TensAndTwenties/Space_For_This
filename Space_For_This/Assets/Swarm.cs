@@ -7,12 +7,14 @@ public class Swarm {
 	public List<SwarmPathAction> swarmActions { get; set;}
 	public Vector3 startingPoint { get; set;}
 	public float spawnVariance { get; set;}
+	public Object swarmParent { get; set;}
 
-	public Swarm(List<Object> ships, List<SwarmPathAction> actions, Vector3 start, float _spawnVariance = 0){
+	public Swarm(List<Object> ships, List<SwarmPathAction> actions, Vector3 start, float _spawnVariance = 0, Object _swarmParent = null){
 		this.swarmShips = ships;
 		this.swarmActions = actions;
 		this.startingPoint = start;
 		this.spawnVariance = _spawnVariance;
+		this.swarmParent = _swarmParent;
 	}
 
 //	public static Swarm GenerateSwarmFromPattern(){
@@ -31,9 +33,11 @@ public class Swarm {
 		//ensure proper number of firings via aggressiveness variable - controls firing vs. move actions
 //	}
 
-	public static Swarm GenerateSwarmWithShape(string enemy, int size, float moveSpeed, float moveVariance, float spawnVariance, swarmActionShape shape){
+	public static Swarm GenerateSwarmWithShape(shipType type, int size, float moveSpeed, float moveVariance, float spawnVariance, swarmActionShape shape){
 		List<SwarmPathAction> actions = new List<SwarmPathAction> ();
-		List<Object> ships = new List<Object> ();
+		List<Object> enemies = new List<Object> ();
+		Object parent = null;
+
 		Vector3 start = new Vector3 (-7, 11, 0);
 
 		switch (shape) {
@@ -43,15 +47,54 @@ public class Swarm {
 		case swarmActionShape.diamond:
 			actions = Diamond (moveSpeed, moveVariance);
 			break;
+		case swarmActionShape.test:
+			actions = Test (moveSpeed, moveVariance);
+			break;
 		}
-
+			
 		for (int i = 0; i < size; i++ ) {
-			ships.Add (
-				Resources.Load (enemy)
+			enemies.Add (
+				Resources.Load (type.ToString())
 			);
 		}
 
-		return new Swarm (ships, actions, start, spawnVariance);
+		if (enemies.Count == 1) {
+			enemies.Add (
+				Resources.Load (shipType.dummy.ToString())
+			);
+			parent = enemies[1];
+		}
+
+		return new Swarm (enemies, actions, start, spawnVariance, parent);
+	}
+
+	private static List<SwarmPathAction> Test(float moveSpeed, float moveVariance){
+		List<SwarmPathAction> actions = new List<SwarmPathAction> ();
+
+		Vector3[] bezierVectors = new Vector3[4];
+		bezierVectors [0] = new Vector3 (-4,5,0); //StartPoint
+		bezierVectors [1] = new Vector3 (4,1,0); //EndControl
+		bezierVectors [2] = new Vector3 (-4, 1,0); //StartControl
+		bezierVectors [3] = new Vector3 (4, 5,0); //EndPoint
+
+		actions.Add (
+			new SwarmPathAction (new SwarmMoveDetails (
+				bezierVectors
+				, moveSpeed, moveVariance))
+		);
+
+		bezierVectors [0] = new Vector3 (4,5,0);
+		bezierVectors [1] = new Vector3 (-4,9,0);
+		bezierVectors [2] = new Vector3 (4, 9,0);
+		bezierVectors [3] = new Vector3 (-4, 5,0);
+
+		actions.Add (
+			new SwarmPathAction (new SwarmMoveDetails (
+				bezierVectors
+				, moveSpeed, moveVariance))
+		);
+
+		return actions;
 	}
 
 	private static List<SwarmPathAction> FigureEight(float moveSpeed, float moveVariance){
@@ -122,25 +165,25 @@ public class Swarm {
 		actions.Add (
 			new SwarmPathAction (new SwarmMoveDetails (
 				new Vector3(-4f,5,0)
-				, moveSpeed, 1))
+				, moveSpeed, moveVariance))
 		);
 
 		actions.Add (
 			new SwarmPathAction (new SwarmFireDetails (
 				swarmTargetType.atPlayer
-				, new int[1]  { 0 }, 1))
+				, new int[1] { 0 }, 1))
 		);
 
 		actions.Add (
 			new SwarmPathAction (new SwarmMoveDetails (
 				new Vector3(0,0,0)
-				, moveSpeed, 1))
+				, moveSpeed, moveVariance))
 		);
 
 		actions.Add (
 			new SwarmPathAction (new SwarmMoveDetails (
 				new Vector3(4f,5,0)
-				, moveSpeed, 1))
+				, moveSpeed, moveVariance))
 		);
 
 		actions.Add (
@@ -152,7 +195,7 @@ public class Swarm {
 		actions.Add (
 			new SwarmPathAction (new SwarmMoveDetails (
 				new Vector3(0,9,0)
-				, moveSpeed, 1))
+				, moveSpeed, moveVariance))
 		);
 			
 		return actions;
@@ -185,10 +228,21 @@ public class SwarmMoveDetails{
 	public Vector3 moveTarget { get; set;}
 	public float moveSpeed { get; set;}
 	public float moveTargetVariance { get; set;}
+	public bool bezier { get; set; }
+	public Vector3[] bezierVectors { get; set;}
 
 	public SwarmMoveDetails(Vector3 target, float speed = 0, float variance = 0)
 	{
 		this.moveTarget = target;
+		this.moveSpeed = speed;
+		this.moveTargetVariance = variance;
+	}
+
+	public SwarmMoveDetails(Vector3[] bezierVectors, float speed = 0, float variance = 0)
+	{
+		this.moveTarget = bezierVectors[bezierVectors.Length-1];
+		this.bezierVectors = bezierVectors;
+		this.bezier = true;
 		this.moveSpeed = speed;
 		this.moveTargetVariance = variance;
 	}
@@ -209,4 +263,6 @@ public class SwarmFireDetails{
 
 public enum swarmActionType { move, fire, formation } 
 public enum swarmTargetType { straightAhead, atPlayer}
-public enum swarmActionShape { figureEight, diamond }
+public enum swarmActionShape { figureEight, diamond, test }
+public enum shipType { fighter, frigate, drone, dummy, playerShip1 }
+public enum componentType { missle, sheild, rail }
