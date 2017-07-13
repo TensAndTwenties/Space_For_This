@@ -23,6 +23,11 @@ public class EnemyFighterAI : MonoBehaviour {
 	public int componentCount;
 	public List<Object> components;
 
+	//for components
+	public float maxTimeBetweenFiring = 4f;
+	public float minTimeBetweenFiring = 1f;
+	public float timeSinceLastFiring = 0;
+
     // Use this for initialization
     void Awake () {
         gameCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
@@ -39,8 +44,8 @@ public class EnemyFighterAI : MonoBehaviour {
 				//add components
 
 				var values = componentType.GetValues(typeof (componentType));
-				componentType left = componentType.missle;//(componentType) values.GetValue (Random.Range(0,values.Length));
-				componentType right = componentType.missle;//(componentType) values.GetValue (Random.Range(0,values.Length));
+				componentType left = (componentType) values.GetValue (Random.Range(0,values.Length));
+				componentType right = (componentType) values.GetValue (Random.Range(0,values.Length));
 		
 				Object LeftComponent = Resources.Load ("left_" + left.ToString ());
 				components.Add (LeftComponent);
@@ -50,6 +55,7 @@ public class EnemyFighterAI : MonoBehaviour {
 			}
 
 			foreach (Object component in components) {
+				//initialize component properties
 				GameObject newComponent = Instantiate (component) as GameObject;
 				newComponent.GetComponent<EnemyFighterAI> ().isComponent = true;
 				newComponent.transform.parent = this.transform;
@@ -156,6 +162,18 @@ public class EnemyFighterAI : MonoBehaviour {
 						computeMoveTarget ();
 					}
 				}
+			}
+		} else {
+			//component update code
+			//make components fire once every X seconds. Ensure there is at least Y seconds before firings
+
+			timeSinceLastFiring += Time.deltaTime;
+
+			if (Random.Range (minTimeBetweenFiring, maxTimeBetweenFiring) <= timeSinceLastFiring) {
+				//fire
+				SwarmFireDetails fireDetails = new SwarmFireDetails(swarmTargetType.straightAhead, new int[1]  { 0 });
+				fireWeapons (fireDetails);
+				timeSinceLastFiring = 0;
 			}
 		}
 	}
