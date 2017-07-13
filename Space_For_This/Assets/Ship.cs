@@ -39,7 +39,7 @@ public class Ship {
 	public void applyDamage(float damage) {
 
 		if (playerShip) {
-			//if sheild is up, damage sheild and re-set the recharge on it. Otherwise damage health.
+			//if shield is up, damage shield and re-set the recharge on it. Otherwise damage health.
 			if (shield.currentShield > 0) {
 				if ((shield.currentShield -= damage) < 0) {
 					shield.currentShield = 0;

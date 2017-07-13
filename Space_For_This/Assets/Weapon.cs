@@ -32,6 +32,22 @@ public class Weapon
 
 	}
 
+	public static Weapon createBasicEnemyMissle(){
+
+		FireStream[] fireStreams = new FireStream[1];
+
+		GameObject projectilePrefab = Resources.Load("missile_nonhome") as GameObject;
+		Projectile projectile = projectilePrefab.GetComponent<Projectile>();
+		projectile.prefab = projectilePrefab;
+
+		fireStreams[0] = new FireStream(0.1f, projectile, new Vector3(0f, 0, 0),0);
+
+		Weapon newWeapon = new Weapon(fireStreams);
+
+		return newWeapon;
+
+	}
+
 	public static Weapon createBasicWeap1()
 	{
 

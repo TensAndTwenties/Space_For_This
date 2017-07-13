@@ -22,6 +22,7 @@ public class EnemyFighterAI : MonoBehaviour {
 	public bool isComponent;
 	public int componentCount;
 	public List<Object> components;
+	public componentType componentType;
 
 	//for components
 	public float maxTimeBetweenFiring = 4f;
@@ -40,25 +41,54 @@ public class EnemyFighterAI : MonoBehaviour {
 		if (componentCount > 0) {
 			//spawn in components
 
-			if (shipType == shipType.frigate) {
-				//add components
+			string resourcePath = "";
 
-				var values = componentType.GetValues(typeof (componentType));
-				componentType left = (componentType) values.GetValue (Random.Range(0,values.Length));
-				componentType right = (componentType) values.GetValue (Random.Range(0,values.Length));
-		
-				Object LeftComponent = Resources.Load ("left_" + left.ToString ());
-				components.Add (LeftComponent);
-				Object RightComponent =	Resources.Load ("right_" + right.ToString ());
-				components.Add (RightComponent);
-				
+			switch (shipType) {
+			case shipType.frigate: 
+				resourcePath = "frigate_components/";
+				break;
 			}
+
+			//right now we only support 2 components per ship - 1 left and 1 right
+			var values = componentType.GetValues(typeof (componentType));
+			componentType left = (componentType) values.GetValue (Random.Range(0,values.Length));
+			componentType right = (componentType) values.GetValue (Random.Range(0,values.Length));
+
+			//totally janky
+			Object LeftComponent = Resources.Load (resourcePath + "left_" + left.ToString ());
+			components.Add (LeftComponent);
+
+			Object RightComponent =	Resources.Load (resourcePath + "right_" + right.ToString ());
+			components.Add (RightComponent);
 
 			foreach (Object component in components) {
 				//initialize component properties
 				GameObject newComponent = Instantiate (component) as GameObject;
 				newComponent.GetComponent<EnemyFighterAI> ().isComponent = true;
 				newComponent.transform.parent = this.transform;
+
+				switch (newComponent.GetComponent<EnemyFighterAI> ().componentType) {
+				case componentType.shield:
+					shipType type = this.ship.shipType;
+					Object shield = null;
+					GameObject newShield = null;
+
+					switch (type) {
+					case shipType.frigate:
+						shield = Resources.Load (resourcePath + "shield");
+						break;
+					}
+
+					newShield = Instantiate (shield) as GameObject;
+					newShield.transform.parent = newComponent.transform;
+					newShield.GetComponent<EnemyFighterAI> ().ship.weapons [0] = null;
+
+					break;
+				case componentType.missle:
+					newComponent.GetComponent<EnemyFighterAI> ().ship.weapons [0] = Weapon.createBasicEnemyMissle ();
+					break;
+				}
+					
 			}
 		}
 

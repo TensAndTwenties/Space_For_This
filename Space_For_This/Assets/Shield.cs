@@ -10,7 +10,7 @@ public class Shield
 	public float maxRechargeDelay { get; set; }
 	public float currentRechargeDelay { get; set; }
 
-	public Shield (float _maxShield, float _rechargeRate, float _maxRechargeDelay)
+	public Shield (float _maxShield, float _rechargeRate = 0f, float _maxRechargeDelay = 0f)
 	{
 		maxShield = _maxShield;
 		currentShield = _maxShield;

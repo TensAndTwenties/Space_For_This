@@ -267,7 +267,7 @@ public class Player_Controller : MonoBehaviour {
 
 	public void UpdateShield()
 	{
-		//controls sheild recharge and recharge delay updates
+		//controls shield recharge and recharge delay updates
 		//if(playerShip.shield.currentRechargeDelay)
 		if (playerShip.shield.currentRechargeDelay == 0 && playerShip.shield.currentShield < playerShip.shield.maxShield) {
 			//recharge

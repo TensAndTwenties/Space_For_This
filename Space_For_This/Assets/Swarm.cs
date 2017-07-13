@@ -265,4 +265,4 @@ public enum swarmActionType { move, fire, formation }
 public enum swarmTargetType { straightAhead, atPlayer}
 public enum swarmActionShape { figureEight, diamond, test }
 public enum shipType { fighter, frigate, drone, dummy, component, playerShip1 }
-public enum componentType { missle, sheild, rail }
+public enum componentType { missle, shield, rail }
