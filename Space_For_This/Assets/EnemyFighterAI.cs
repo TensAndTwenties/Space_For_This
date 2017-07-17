@@ -11,6 +11,7 @@ public class EnemyFighterAI : MonoBehaviour {
 	SwarmPathAction currentAction;
 	int currentActionPosition;
 	Vector3 currentMoveTarget = Vector3.zero;
+	float currentMoveTime;
 
 	public float shipSpeed;
 	public shipType shipType;
@@ -23,6 +24,7 @@ public class EnemyFighterAI : MonoBehaviour {
 	public int componentCount;
 	public List<Object> components;
 	public componentType componentType;
+	public bool damageMask; //do we want to display a mask on hit?
 
 	//for components
 	public float maxTimeBetweenFiring = 4f;
@@ -37,6 +39,16 @@ public class EnemyFighterAI : MonoBehaviour {
 		ship.dodgeLength = dodgeLength;
 		ship.weapons [0] = Weapon.createBasicEnemyWeapon ();
 		ship.isComponent = isComponent;
+
+		//instantiate weapons based on ship type
+
+		switch (shipType) {
+		case shipType.fighter:
+			break;
+		case shipType.frigate:
+			ship.weapons [0] = Weapon.createFrigateSpreadWeapon ();
+			break;
+		}
 
 		if (componentCount > 0) {
 			//spawn in components
@@ -81,11 +93,16 @@ public class EnemyFighterAI : MonoBehaviour {
 
 					newShield = Instantiate (shield) as GameObject;
 					newShield.transform.parent = newComponent.transform;
-					newShield.GetComponent<EnemyFighterAI> ().ship.weapons [0] = null;
+					//set sheild and generator to both have null weapons
+					newShield.GetComponent<EnemyFighterAI> ().ship.weapons = null;
+					this.weapons = null;
 
 					break;
-				case componentType.missle:
-					newComponent.GetComponent<EnemyFighterAI> ().ship.weapons [0] = Weapon.createBasicEnemyMissle ();
+				case componentType.missile:
+					newComponent.GetComponent<EnemyFighterAI> ().ship.weapons [0] = Weapon.createBasicEnemymissile ();
+					break;
+				case componentType.rail:
+					newComponent.GetComponent<EnemyFighterAI> ().ship.weapons [0] = Weapon.createBasicEnemyRail ();
 					break;
 				}
 					
@@ -99,20 +116,26 @@ public class EnemyFighterAI : MonoBehaviour {
 	//place if the firing proves to be similar
 
 	public void fireWeapons(SwarmFireDetails details){
-		int[] weaponIndexes = details.fireWeapons;
-		foreach (int weaponIndex in weaponIndexes) {
-			foreach (FireStream fs in ship.weapons[weaponIndex].fireStreams) {
-				// NO cooldowns for enemy weapons so we can script whatever we want
-				//if (fs.currentCooldown <= 0f) {
-				FireProjectile (fs, details.targetType);
-					fs.currentCooldown = fs.fireRate;
-				//}
+		if (ship.weapons.Length > 0) {
+			int[] weaponIndexes = details.fireWeapons;
+			foreach (int weaponIndex in weaponIndexes) {
+				foreach (FireStream fs in ship.weapons[weaponIndex].fireStreams) {
+					// NO cooldowns for enemy weapons so we can script whatever we want
+					//if (fs.currentCooldown <= 0f) {
+					IEnumerator coroutine = FireProjectile (fs, details.targetType, details.firings);
+					StartCoroutine(coroutine);
+
+					//FireProjectile (fs, details.targetType);
+					//fs.currentCooldown = fs.fireRate;
+					//}
+				}
 			}
 		}
 	}
 
-	public void FireProjectile(FireStream fireStream, swarmTargetType targetType )
+	public IEnumerator FireProjectile(FireStream fireStream, swarmTargetType targetType, int firings )
 	{
+		for(int i = 1; i <= firings; i++){
 		GameObject newProjectileObj = Instantiate(fireStream.projectile.prefab) as GameObject;
 		newProjectileObj.transform.position = transform.position + fireStream.offset;
 		newProjectileObj.GetComponent<Projectile>().angle = fireStream.angleOffset;
@@ -129,8 +152,27 @@ public class EnemyFighterAI : MonoBehaviour {
 		{
 			newProjectileObj.GetComponent<Projectile>().angle = fireStream.angleOffset + 45 + Random.Range(-fireStream.spread, fireStream.spread);
 		}
+
+		yield return new WaitForSeconds(fireStream.fireRate);
+		}
 	}
 
+	public void applyDamage(float damage){
+		this.ship.applyDamage (damage);
+		if (damageMask) {
+			IEnumerator coroutine = applyDamageMask (this.gameObject);
+			StartCoroutine(coroutine);
+		}
+	}
+
+	private IEnumerator applyDamageMask(GameObject objectToMask){
+
+		this.gameObject.GetComponent<SpriteRenderer> ().color = Color.yellow;
+
+		yield return new WaitForSeconds(0.1f);
+
+		this.gameObject.GetComponent<SpriteRenderer> ().color = Color.white;
+	}
 	// Update is called once per frame
 	void Update () {
 		
@@ -147,32 +189,39 @@ public class EnemyFighterAI : MonoBehaviour {
 			//execute the current swarm action
 			if (currentAction.actionType == swarmActionType.move) {
 
-				if (!currentAction.moveDetails.bezier) {
-					if (currentMoveTarget == Vector3.zero) {
-						computeMoveTarget ();
-					}
+				if (currentMoveTarget == Vector3.zero) {
+					computeMoveTargetAndTime ();
+				}
 
-					float step = currentAction.moveDetails.moveSpeed * Time.deltaTime;
-
-					if (transform.localPosition == currentMoveTarget) {
-						//we're there - move to next action, or start over
-						if (currentActionPosition == swarmActions.Count - 1) {
-							currentAction = swarmActions [0];
-							currentActionPosition = 0;
-							computeMoveTarget ();
-						} else {
-							currentAction = swarmActions [currentActionPosition + 1];
-							currentActionPosition += 1;
-							if (currentAction.actionType == swarmActionType.move) {
-								computeMoveTarget ();
-							}
+				if (transform.localPosition == currentMoveTarget) {
+					//we're there - move to next action, or start over
+					if (currentActionPosition == swarmActions.Count - 1) {
+						currentAction = swarmActions [0];
+						currentActionPosition = 0;
+						computeMoveTargetAndTime ();
+					} else {
+						currentAction = swarmActions [currentActionPosition + 1];
+						currentActionPosition += 1;
+						if (currentAction.actionType == swarmActionType.move) {
+							computeMoveTargetAndTime ();
 						}
-					} else { 
-						transform.localPosition = Vector3.MoveTowards (transform.localPosition, currentMoveTarget, step);
 					}
-				} else {
-					//currentAction = swarmActions [0];
-					LeanTween.move (this.gameObject, currentAction.moveDetails.bezierVectors, 2f);
+				} else { 
+					if (LeanTween.isTweening (this.gameObject)) {
+					} else {
+						switch (currentAction.moveDetails.moveActionType) {
+							case swarmMoveActionType.linear:
+								LeanTween.move ( this.gameObject,currentMoveTarget, currentMoveTime);
+								break;
+							case swarmMoveActionType.bezier:
+								//note the bad approximation of move time. Tough to cheaply predict the length of a bezier
+								//curve based on it's control vectors
+							LeanTween.move (this.gameObject, currentAction.moveDetails.bezierVectors, 1.2f * currentMoveTime).setRepeat(0);
+							break;
+						}
+
+					}
+					//transform.localPosition = Vector3.MoveTowards (transform.localPosition, currentMoveTarget, step);
 				}
 			} else if (currentAction.actionType == swarmActionType.fire) {
 				//get weapon and fire at target
@@ -184,12 +233,12 @@ public class EnemyFighterAI : MonoBehaviour {
 				if (currentActionPosition == swarmActions.Count - 1) {
 					currentAction = swarmActions [0];
 					currentActionPosition = 0;
-					computeMoveTarget ();
+					computeMoveTargetAndTime ();
 				} else {
 					currentAction = swarmActions [currentActionPosition + 1];
 					currentActionPosition += 1;
 					if (currentAction.actionType == swarmActionType.move) {
-						computeMoveTarget ();
+						computeMoveTargetAndTime ();
 					}
 				}
 			}
@@ -201,7 +250,18 @@ public class EnemyFighterAI : MonoBehaviour {
 
 			if (Random.Range (minTimeBetweenFiring, maxTimeBetweenFiring) <= timeSinceLastFiring) {
 				//fire
-				SwarmFireDetails fireDetails = new SwarmFireDetails(swarmTargetType.straightAhead, new int[1]  { 0 });
+
+				SwarmFireDetails fireDetails = null;
+
+				switch(this.componentType){
+				case componentType.missile:
+					fireDetails = new SwarmFireDetails (swarmTargetType.straightAhead, new int[1]  { 0 }, 3);
+					break;
+				case componentType.rail:
+					fireDetails = new SwarmFireDetails (swarmTargetType.straightAhead, new int[1]  { 0 }, 10);
+					break;
+				}
+
 				fireWeapons (fireDetails);
 				timeSinceLastFiring = 0;
 			}
@@ -216,10 +276,16 @@ public class EnemyFighterAI : MonoBehaviour {
 		return toReturn;
 	}
 
-	void computeMoveTarget(){
+	void computeMoveTargetAndTime(){
 		float targetX = currentAction.moveDetails.moveTarget.x + Random.Range (-currentAction.moveDetails.moveTargetVariance, currentAction.moveDetails.moveTargetVariance);
 		float targetY = currentAction.moveDetails.moveTarget.y + Random.Range (-currentAction.moveDetails.moveTargetVariance, currentAction.moveDetails.moveTargetVariance);
+		if (currentAction.moveDetails.moveActionType == swarmMoveActionType.bezier) {
+			currentAction.moveDetails.bezierVectors[currentAction.moveDetails.bezierVectors.Length-1] = new Vector3 (targetX, targetY, 0);
+			currentAction.moveDetails.bezierVectors[0] = this.transform.localPosition;
+		}
 		currentMoveTarget = new Vector3 (targetX, targetY, 0);
+		float currentMoveDistance = (currentMoveTarget - this.transform.position).magnitude;
+		currentMoveTime = currentMoveDistance/currentAction.moveDetails.moveSpeed;
 	}
 		
 }

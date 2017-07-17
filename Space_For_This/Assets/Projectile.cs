@@ -49,8 +49,8 @@ public class Projectile : MonoBehaviour
     {
 		GameObject target = collider.gameObject;
 		if (target.tag == "Enemy" && !enemyProjectile) {
-
-			target.GetComponent<EnemyFighterAI> ().ship.applyDamage (damage);
+			
+			target.GetComponent<EnemyFighterAI> ().applyDamage (damage);
 
 			DestroyProjectile ();
 		} else if (target.tag == "Player" && enemyProjectile) {
