@@ -25,6 +25,9 @@ public class EnemyFighterAI : MonoBehaviour {
 	public List<Object> components;
 	public componentType componentType;
 	public bool damageMask; //do we want to display a mask on hit?
+	public int scrapMin; //min scrap per drop
+	public int scrapMax; //max scrap per drop
+	public int scrapDrops; //number of distinct scraps dropped
 
 	//for components
 	public float maxTimeBetweenFiring = 4f;
@@ -39,6 +42,7 @@ public class EnemyFighterAI : MonoBehaviour {
 		ship.dodgeLength = dodgeLength;
 		ship.weapons [0] = Weapon.createBasicEnemyWeapon ();
 		ship.isComponent = isComponent;
+		ship.componentType = componentType;
 
 		//instantiate weapons based on ship type
 
@@ -116,7 +120,7 @@ public class EnemyFighterAI : MonoBehaviour {
 	//place if the firing proves to be similar
 
 	public void fireWeapons(SwarmFireDetails details){
-		if (ship.weapons.Length > 0) {
+		if (ship.weapons != null && ship.weapons.Length > 0) {
 			int[] weaponIndexes = details.fireWeapons;
 			foreach (int weaponIndex in weaponIndexes) {
 				foreach (FireStream fs in ship.weapons[weaponIndex].fireStreams) {
@@ -173,12 +177,29 @@ public class EnemyFighterAI : MonoBehaviour {
 
 		this.gameObject.GetComponent<SpriteRenderer> ().color = Color.white;
 	}
+
+	void destroyShip(){
+		Destroy(this.gameObject);
+
+		if (Random.Range(0, 10) == 1) {
+			
+			for (int i = 1; i <= scrapDrops; i++) {
+
+				int scrapAmount = Random.Range (scrapMin, scrapMax);
+
+				Object scrapObj = Resources.Load ("scrap");
+				GameObject newScrap = Instantiate (scrapObj) as GameObject;
+				newScrap.transform.position = this.transform.position;
+				newScrap.GetComponent<Scrap> ().scrapAmount = scrapAmount;
+			}
+		}
+	}
 	// Update is called once per frame
 	void Update () {
 		
 		if (ship.currentHealth <= 0)
 		{
-			Destroy(this.gameObject);
+			destroyShip ();
 		}
 
 		if (!ship.isComponent) {
@@ -262,7 +283,10 @@ public class EnemyFighterAI : MonoBehaviour {
 					break;
 				}
 
-				fireWeapons (fireDetails);
+				if (fireDetails != null) {
+					fireWeapons (fireDetails);
+				}
+
 				timeSinceLastFiring = 0;
 			}
 		}

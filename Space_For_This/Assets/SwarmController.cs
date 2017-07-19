@@ -5,7 +5,8 @@ using System.Collections.Generic;
 public class SwarmController : MonoBehaviour {
 
 	private IEnumerator coroutine;
-	private float difficultyLevel = 5; //measure of current difficulty, 0-10
+	private float maxDifficultyLevel = 500; //measure of current difficulty, 0-1000
+	public float currentDifficultyLevel = 0.0f;
 	private List<Swarm> activeSwarms; //all active swarms
 	private List<SwarmGroup> groupsToSpawn; //possible swarm groups to spwan
 
@@ -29,6 +30,7 @@ public class SwarmController : MonoBehaviour {
 
 		//testSwarm = Swarm.GenerateSwarmWithShape ("Enemy1",100,8,1,0.3f,swarmActionShape.diamond);
 		//spawnVector = new Vector3 (-testSwarm.startingPoint.x, testSwarm.startingPoint.y);
+		InvokeRepeating("AssesCurrentDifficulty",30f,30f);
 
 		foreach (Swarm currentSwarm in groupsToSpawn[0].swarms) {
 			coroutine = SpawnEnemies (currentSwarm);
@@ -62,7 +64,59 @@ public class SwarmController : MonoBehaviour {
 
 	private void AssesCurrentDifficulty(){
 		//invoked repeatedly
+		float currentTotalDifficulty = 0.0f;
+		GameObject[] currentEnemies =  GameObject.FindGameObjectsWithTag("Enemy");
+		foreach (GameObject enemy in currentEnemies) {
+				float shipDifficulty = 0.0f;
 
+			if (enemy.GetComponent<EnemyFighterAI>().isComponent) {
+					//component difficulty calculated seperately
+				switch (enemy.GetComponent<EnemyFighterAI>().componentType) {
+					case componentType.missile:
+						shipDifficulty = 5;
+						break;
+					case componentType.shield:
+						shipDifficulty = 7;
+						break;
+					case componentType.rail:
+						shipDifficulty = 5;
+						break;
+					}
+				} else {
+					//ship difficulty
+				switch (enemy.GetComponent<EnemyFighterAI>().shipType) {
+					case shipType.fighter:
+						shipDifficulty = 2f;
+						break;
+					case shipType.drone:
+						shipDifficulty = 1f;
+						break;
+					case shipType.frigate:
+						shipDifficulty = 10f;
+						break;
+					}
+				}
+			currentTotalDifficulty += shipDifficulty;
+			}
+		
+		currentDifficultyLevel = currentTotalDifficulty;
+
+		if (currentDifficultyLevel < maxDifficultyLevel * 0.7f) {
+			//spawn more
+			int swarmTypeRoll = Random.Range(1,2);
+
+			switch (swarmTypeRoll) {
+			case 1:
+				//spawn random pre-defined group
+				Swarm currentSwarm = Swarm.GenerateSwarmWithShape (shipType.fighter,70,8,1,0.8f,swarmActionShape.figureEight);
+				coroutine = SpawnEnemies (currentSwarm);
+				StartCoroutine(coroutine);
+				break;
+			case 2:
+				//spawn random swarm from pattern
+				break;
+			}
+		}
 	}
 
 	private IEnumerator SpawnEnemies(Swarm currentSwarm)

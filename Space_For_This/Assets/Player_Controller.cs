@@ -18,6 +18,7 @@ public class Player_Controller : MonoBehaviour {
     Vector3 shipSize;
     float shipWidth;
     KeyCode previouslyPressed = 0;
+	public int currentScrap { get; set;}
 
     Object enemyShip1; 
     Object enemyShip2; 
@@ -49,8 +50,7 @@ public class Player_Controller : MonoBehaviour {
 
         shipSize = GetComponent<Renderer>().bounds.size;
         shipWidth = shipSize.x;
-
-
+		currentScrap = 0;
 
         enemies[0] = Resources.Load("Enemy1");
         enemies[1] = Resources.Load("Enemy2");

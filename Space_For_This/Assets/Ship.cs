@@ -14,6 +14,7 @@ public class Ship {
 	public Shield shield { get; set;}
 	public Ship componentLeft { get; set;}
 	public Ship componentRight { get; set;}
+	public componentType componentType { get; set;}
 	public bool isComponent { get; set; }
     // Use this for initialization
 

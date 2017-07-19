@@ -77,6 +77,7 @@
      <Compile Include="Assets\Module.cs" />
      <Compile Include="Assets\Player_Controller.cs" />
      <Compile Include="Assets\Projectile.cs" />
+     <Compile Include="Assets\Scrap.cs" />
      <Compile Include="Assets\Shield.cs" />
      <Compile Include="Assets\Ship.cs" />
      <Compile Include="Assets\Swarm.cs" />
