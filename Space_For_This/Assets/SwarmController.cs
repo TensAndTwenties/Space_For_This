@@ -18,19 +18,9 @@ public class SwarmController : MonoBehaviour {
 		groupsToSpawn = instantiateSwarmGroups ();
 		//Swarm testSwarm = Swarm.GenerateSwarmWithShape (shipType.fighter,70,8,1,0.8f,swarmActionShape.figureEight);
 
-		//Swarm testSwarm = Swarm.GenerateSwarmWithShape (shipType.frigate,1,6,0,0f,swarmActionShape.diamond);
-		//instantiate swarm ships
+		//InvokeRepeating("AssesCurrentDifficulty",30f,30f);
 
-		//Swarm parentSwarm = Swarm.GenerateSwarmWithShape ("Enemy1",1,8,1,0.3f,swarmActionShape.diamond);
-
-		//spawnTarget.GetComponent<EnemyFighterAI> ().swarmActions = parentSwarm.swarmActions;
-
-		//coroutine = SpawnEnemies (testSwarm);
-		//StartCoroutine(coroutine);
-
-		//testSwarm = Swarm.GenerateSwarmWithShape ("Enemy1",100,8,1,0.3f,swarmActionShape.diamond);
-		//spawnVector = new Vector3 (-testSwarm.startingPoint.x, testSwarm.startingPoint.y);
-		InvokeRepeating("AssesCurrentDifficulty",30f,30f);
+		//Swarm currentSwarm = Swarm.GenerateSwarmWithShape (shipType.fighter, 20, 8, 0f, 0.2f, swarmActionShape.diamond);
 
 		foreach (Swarm currentSwarm in groupsToSpawn[0].swarms) {
 			coroutine = SpawnEnemies (currentSwarm);
@@ -46,10 +36,10 @@ public class SwarmController : MonoBehaviour {
 		//fighters circling frigate
 		List<Swarm> currentSwarms = new List<Swarm>();
 
-		Swarm frigate = Swarm.GenerateSwarmWithShape (shipType.frigate,2,6,0,3f,swarmActionShape.figureEight);
+		Swarm frigate = Swarm.GenerateSwarmWithShape (shipType.frigate,1,6,0,0,swarmActionShape.figureEight);
 		//Swarm frigate2 = Swarm.GenerateSwarmWithShape (shipType.frigate,1,6,0,0f,swarmActionShape.test);
-		//Swarm fighters = Swarm.GenerateSwarmWithShape (shipType.fighter,150,8,1,0.1f,swarmActionShape.figureEight);
-		//frigate.childSwarm = fighters;
+		Swarm fighters = Swarm.GenerateSwarmWithShape (shipType.fighter,20,8,1,0.1f,swarmActionShape.diamond);
+		frigate.childSwarm = fighters;
 
 		currentSwarms.Add(frigate);
 		//currentSwarms.Add(frigate2);
@@ -119,19 +109,30 @@ public class SwarmController : MonoBehaviour {
 		}
 	}
 
-	private IEnumerator SpawnEnemies(Swarm currentSwarm)
+	private IEnumerator SpawnEnemies(Swarm currentSwarm, GameObject swarmParent = null)
 	{
+		GameObject currentDummy = null;
+		
 		Vector3 spawnVector = currentSwarm.startingPoint;
 		foreach (Object enemy in currentSwarm.swarmShips) {
 			GameObject newEnemy = Instantiate (enemy) as GameObject;
 
-			if (currentSwarm.swarmParent != null) {
-				//get the dummy of the parent swarm and assign this swarm as the child
+			if (newEnemy.GetComponent<EnemyFighterAI> ().ship.shipType == shipType.dummy) {
+				currentDummy = newEnemy;
+			}
+
+			if (swarmParent != null) {
+				newEnemy.transform.parent = swarmParent.transform;
 			}
 
 			newEnemy.transform.position = spawnVector;
 			newEnemy.GetComponent<EnemyFighterAI> ().swarmActions = currentSwarm.swarmActions;
 			yield return new WaitForSeconds(Random.Range (0f, currentSwarm.spawnVariance));
+		}
+
+		if (currentSwarm.childSwarm != null && currentDummy != null) {
+			IEnumerator coroutine = SpawnEnemies (currentSwarm.childSwarm, currentDummy);
+			StartCoroutine(coroutine);
 		}
 
 	}

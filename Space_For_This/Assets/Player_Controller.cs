@@ -40,9 +40,8 @@ public class Player_Controller : MonoBehaviour {
 		playerShip.dodgeLength = dodgeLength;
 		playerShip.dodgeSpeed = dodgeSpeed;
 
-        playerShip.weapons[0] = Weapon.createBasicWeap1();
-		playerShip.weapons[1] = Weapon.createBasicWeap1();
-		playerShip.weapons[2] = Weapon.createBasicWeap2();
+		playerShip.weapons[0] = Weapon.createBasicWeap1();
+		playerShip.weapons [1] = Weapon.createHomingSwarm ();
 		playerShip.weapons[3] = Weapon.createBasicWeap3();
 		playerShip.weapons[4] = Weapon.createBasicWeap4();
 
@@ -108,6 +107,11 @@ public class Player_Controller : MonoBehaviour {
 			if (Input.GetKeyUp (KeyCode.Space)) {
 				previouslyPressed = 0;
 			}
+
+			if (Input.GetKey (KeyCode.E)) {
+				FireSpecialWeapon ();
+			}
+
 
 			if (Input.GetKey (KeyCode.Alpha1)) {
 				playerShip.weapons [0] = playerShip.weapons [1];
@@ -245,6 +249,20 @@ public class Player_Controller : MonoBehaviour {
             }
         }
     }
+
+	public void FireSpecialWeapon()
+	{
+		foreach (FireStream fs in playerShip.weapons[1].fireStreams)
+		{
+			//InvokeRepeating("FireProjectile", 0.0F, fs.fireRate);
+			for (int i = 1; i <= playerShip.weapons [1].projectilesPerFire; i++) {
+				if (fs.currentCooldown <= 0f) {
+					FireProjectile (fs);
+					fs.currentCooldown = fs.fireRate;
+				}
+			}
+		}
+	}
 
     public void CeaseWeapon()
     {

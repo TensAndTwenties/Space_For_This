@@ -6,6 +6,8 @@ public class Weapon
     public bool firing;
     public FireStream[] fireStreams;
     GameObject playerShip;
+	public int projectilesPerFire; //for player weapons that fire more than once on activation
+
 	// Use this for initialization
 	void Awake () {
         firing = false;
@@ -99,7 +101,7 @@ public class Weapon
 		return newWeapon;
 	}
 
-	public static Weapon createBasicWeap2()
+	public static Weapon createHomingSwarm()
 	{
 
 		FireStream[] fireStreams = new FireStream[1];
@@ -108,9 +110,11 @@ public class Weapon
 		Projectile projectile = projectilePrefab.GetComponent<Projectile>();
 		projectile.prefab = projectilePrefab;
 
-		fireStreams[0] = new FireStream(1f, projectile, new Vector3(0, 0, 0));
+		fireStreams[0] = new FireStream(0.1f, projectile, new Vector3(0, 0, 0));
 
 		Weapon newWeapon = new Weapon(fireStreams);
+
+		newWeapon.projectilesPerFire = 20;
 
 		return newWeapon;
 	}

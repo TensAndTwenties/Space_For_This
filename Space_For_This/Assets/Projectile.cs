@@ -20,6 +20,7 @@ public class Projectile : MonoBehaviour
     List<GameObject> targets = new List<GameObject>();
 	public swarmTargetType targetType;
 	public Vector3 dumbTarget;
+	private bool isHoming; //to let us know if a scripted homing motion is in progress
 	float stepBase;
 	float stepY = 0;
 	float stepX = 0;
@@ -110,7 +111,10 @@ public class Projectile : MonoBehaviour
             }
             else
             {
-                transform.position = Vector3.MoveTowards(transform.position, homingTarget.transform.position, stepBase);
+				if (!isHoming){
+					IEnumerator coroutine = ExecuteHomingArc (homingTarget);
+					StartCoroutine (coroutine); // execute arcing, then head towards enemies
+				}
             }
         }
         else {
@@ -123,4 +127,22 @@ public class Projectile : MonoBehaviour
 			}
 		}    
     }
+
+	private IEnumerator ExecuteHomingArc(GameObject target){
+		isHoming = true;
+		float xPos = this.transform.position.x;
+		float yPos = this.transform.position.y;
+		float arcTime = 1.2f;
+		Vector3[] bezierVectors = new Vector3[4];
+		bezierVectors [0] = new Vector3 (xPos,yPos,0); //StartPoint
+		bezierVectors [1] = new Vector3 (xPos-4,yPos,0); //EndControl
+		bezierVectors [2] = new Vector3 (xPos-1,yPos,0); //StartControl
+		bezierVectors [3] = new Vector3 (xPos-4,yPos+4,0); //EndPoint
+
+		LeanTween.move (this.gameObject, bezierVectors, arcTime).setRepeat(0);
+		yield return new WaitForSeconds (arcTime);
+		LeanTween.move (this.gameObject, target.transform, arcTime).setRepeat(0);
+
+
+	}
 }

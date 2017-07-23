@@ -232,12 +232,12 @@ public class EnemyFighterAI : MonoBehaviour {
 					} else {
 						switch (currentAction.moveDetails.moveActionType) {
 							case swarmMoveActionType.linear:
-								LeanTween.move ( this.gameObject,currentMoveTarget, currentMoveTime);
+								LeanTween.moveLocal ( this.gameObject,currentMoveTarget, currentMoveTime);
 								break;
 							case swarmMoveActionType.bezier:
 								//note the bad approximation of move time. Tough to cheaply predict the length of a bezier
 								//curve based on it's control vectors
-							LeanTween.move (this.gameObject, currentAction.moveDetails.bezierVectors, 1.2f * currentMoveTime).setRepeat(0);
+							LeanTween.moveLocal (this.gameObject, currentAction.moveDetails.bezierVectors, 1.2f * currentMoveTime).setRepeat(0);
 							break;
 						}
 
@@ -308,7 +308,7 @@ public class EnemyFighterAI : MonoBehaviour {
 			currentAction.moveDetails.bezierVectors[0] = this.transform.localPosition;
 		}
 		currentMoveTarget = new Vector3 (targetX, targetY, 0);
-		float currentMoveDistance = (currentMoveTarget - this.transform.position).magnitude;
+		float currentMoveDistance = (currentMoveTarget - this.transform.localPosition).magnitude;
 		currentMoveTime = currentMoveDistance/currentAction.moveDetails.moveSpeed;
 	}
 		
