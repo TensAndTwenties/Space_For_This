@@ -18,11 +18,11 @@ public class SwarmController : MonoBehaviour {
 		groupsToSpawn = instantiateSwarmGroups ();
 		//Swarm testSwarm = Swarm.GenerateSwarmWithShape (shipType.fighter,70,8,1,0.8f,swarmActionShape.figureEight);
 
-		//InvokeRepeating("AssesCurrentDifficulty",30f,30f);
+		//InvokeRepeating("AssesCurrentDifficulty",10f,10f);
 
-		//Swarm currentSwarm = Swarm.GenerateSwarmWithShape (shipType.fighter, 20, 8, 0f, 0.2f, swarmActionShape.diamond);
+		//Swarm currentSwarm = Swarm.GenerateSwarmWithShape (shipType.fighter, 20, 8, 0.5f, 0.2f, swarmActionShape.lacesLeft);
 
-		foreach (Swarm currentSwarm in groupsToSpawn[0].swarms) {
+		foreach (Swarm currentSwarm in groupsToSpawn[2].swarms) {
 			coroutine = SpawnEnemies (currentSwarm);
 			StartCoroutine(coroutine);
 		}
@@ -32,21 +32,39 @@ public class SwarmController : MonoBehaviour {
 	private List<SwarmGroup> instantiateSwarmGroups(){
 		//create pre-defined, designed groups of swarms to spawn
 		List<SwarmGroup> groupsToReturn = new List<SwarmGroup>();
+		List<Swarm> currentSwarms;
+		SwarmGroup currentSwarmGroup;
 
-		//fighters circling frigate
-		List<Swarm> currentSwarms = new List<Swarm>();
+		#region Fighters circling frigate
+		currentSwarms = new List<Swarm>();
 
-		Swarm frigate = Swarm.GenerateSwarmWithShape (shipType.frigate,1,6,0,0,swarmActionShape.figureEight);
-		//Swarm frigate2 = Swarm.GenerateSwarmWithShape (shipType.frigate,1,6,0,0f,swarmActionShape.test);
-		Swarm fighters = Swarm.GenerateSwarmWithShape (shipType.fighter,20,8,1,0.1f,swarmActionShape.diamond);
+		Swarm frigate = Swarm.GenerateSwarmWithShape (shipType.frigate,1,6,0,0,swarmTargetType.straightAhead,swarmActionShape.figureEight);
+		Swarm fighters = Swarm.GenerateSwarmWithShape (shipType.fighter,20,8,1,0.1f,swarmTargetType.atPlayer,swarmActionShape.circle);
 		frigate.childSwarm = fighters;
 
 		currentSwarms.Add(frigate);
-		//currentSwarms.Add(frigate2);
-		//currentSwarms.Add(fighters);
 
-		SwarmGroup current = new SwarmGroup (currentSwarms,"fighters circling frigate");
-		groupsToReturn.Add (current);
+		currentSwarmGroup = new SwarmGroup (currentSwarms,"fighters circling frigate");
+		groupsToReturn.Add (currentSwarmGroup);
+		#endregion
+
+		#region Fighters Double Laces
+		currentSwarms = new List<Swarm>();
+
+		currentSwarms.Add(Swarm.GenerateSwarmWithShape (shipType.fighter,30,6,0.2f,0.2f,swarmTargetType.straightAhead,swarmActionShape.lacesLeft));
+		currentSwarms.Add(Swarm.GenerateSwarmWithShape (shipType.fighter,30,6,0.2f,0.2f,swarmTargetType.straightAhead,swarmActionShape.lacesLeft).MirrorOverX());
+
+		currentSwarmGroup = new SwarmGroup (currentSwarms,"fighters double laces");
+		groupsToReturn.Add (currentSwarmGroup);
+		#endregion
+
+		#region Fighters Double Steps
+		currentSwarms = new List<Swarm>();
+		currentSwarms.Add(Swarm.GenerateSwarmWithShape (shipType.fighter,20,8,1,0.1f,swarmTargetType.atPlayer,swarmActionShape.circle));
+
+		currentSwarmGroup = new SwarmGroup (currentSwarms,"fighters double laces");
+		groupsToReturn.Add (currentSwarmGroup);
+		#endregion
 
 		return groupsToReturn;
 
@@ -98,7 +116,15 @@ public class SwarmController : MonoBehaviour {
 			switch (swarmTypeRoll) {
 			case 1:
 				//spawn random pre-defined group
-				Swarm currentSwarm = Swarm.GenerateSwarmWithShape (shipType.fighter,70,8,1,0.8f,swarmActionShape.figureEight);
+
+
+				var values = componentType.GetValues (typeof(componentType));
+				swarmActionShape randomShape = (swarmActionShape)values.GetValue (Random.Range (0, values.Length));
+				float spawnVariance = Random.Range (0.2f, 0.8f);
+				float moveVariance = Random.Range (0.1f, 0.5f);
+				int numberOfShips = Random.Range (20, 80);
+
+				Swarm currentSwarm = Swarm.GenerateSwarmWithShape (shipType.fighter,numberOfShips,8,moveVariance,spawnVariance,swarmTargetType.atPlayer,randomShape);
 				coroutine = SpawnEnemies (currentSwarm);
 				StartCoroutine(coroutine);
 				break;

@@ -70,7 +70,7 @@ public class Weapon
 
 		FireStream[] fireStreams = new FireStream[3];
 
-		GameObject projectilePrefab = Resources.Load("projectile_1_slow") as GameObject;
+		GameObject projectilePrefab = Resources.Load("projectile_frigate") as GameObject;
 		Projectile projectile = projectilePrefab.GetComponent<Projectile>();
 		projectile.prefab = projectilePrefab;
 

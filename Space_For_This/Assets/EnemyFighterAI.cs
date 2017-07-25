@@ -217,9 +217,19 @@ public class EnemyFighterAI : MonoBehaviour {
 				if (transform.localPosition == currentMoveTarget) {
 					//we're there - move to next action, or start over
 					if (currentActionPosition == swarmActions.Count - 1) {
+
+						SwarmPathAction oldAction = currentAction;
+
 						currentAction = swarmActions [0];
 						currentActionPosition = 0;
 						computeMoveTargetAndTime ();
+
+						if (oldAction.moveDetails.bezier) {
+							//starting over form bezier - compute move target to be final bezier vector
+							currentMoveTarget = oldAction.moveDetails.bezierVectors[oldAction.moveDetails.bezierVectors.Length-1];
+							 
+						}
+
 					} else {
 						currentAction = swarmActions [currentActionPosition + 1];
 						currentActionPosition += 1;
