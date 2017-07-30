@@ -60,6 +60,7 @@ public class Swarm {
 				Resources.Load (shipType.dummy.ToString())
 			);
 			parent = enemies[1];
+
 		}
 
 		return new Swarm (enemies, actions, start, spawnVariance, parent);
@@ -68,13 +69,13 @@ public class Swarm {
 	private static List<SwarmPathAction> Circle(float moveSpeed, float moveVariance, swarmTargetType targetType){
 		List<SwarmPathAction> actions = new List<SwarmPathAction> ();
 
-
+		/*
 		actions.Add (
 			new SwarmPathAction (new SwarmMoveDetails (
 				new Vector3(-4f,5,0)
 				, moveSpeed, moveVariance))
 		);
-
+	*/
 		
 		Vector3[] bezierVectors = new Vector3[4];
 		bezierVectors [0] = new Vector3 (-4,5,0); //StartPoint
@@ -87,7 +88,13 @@ public class Swarm {
 				bezierVectors
 				, moveSpeed, moveVariance))
 		);
-			
+
+		actions.Add (
+			new SwarmPathAction (new SwarmFireDetails (
+				targetType
+				, new int[1] { 0 }, 1))
+		);
+
 		bezierVectors = new Vector3[4];
 		bezierVectors [0] = new Vector3 (4,5,0);
 		bezierVectors [1] = new Vector3 (-4,9,0);
@@ -98,6 +105,12 @@ public class Swarm {
 			new SwarmPathAction (new SwarmMoveDetails (
 				bezierVectors
 				, moveSpeed, moveVariance))
+		);
+
+		actions.Add (
+			new SwarmPathAction (new SwarmFireDetails (
+				targetType
+				, new int[1] { 0 }, 1))
 		);
 
 		return actions;
@@ -289,11 +302,13 @@ public class Swarm {
 				, moveSpeed, moveVariance))
 		);
 
+
 		actions.Add (
 			new SwarmPathAction (new SwarmFireDetails (
 				targetType
 				, new int[1] { 0 }, 1))
 		);
+
 
 		actions.Add (
 			new SwarmPathAction (new SwarmMoveDetails (
@@ -307,11 +322,13 @@ public class Swarm {
 				, moveSpeed, moveVariance))
 		);
 
+
 		actions.Add (
 			new SwarmPathAction (new SwarmFireDetails (
 				targetType
 				, new int[1]  { 0 }, 1))
 		);
+
 
 		actions.Add (
 			new SwarmPathAction (new SwarmMoveDetails (
@@ -339,10 +356,17 @@ public class Swarm {
 		//alter swarm so that it treats 0,5 as origin
 		foreach (SwarmPathAction action in swarmActions) {
 			if (action.actionType == swarmActionType.move) {
-				if(action.moveDetails.moveActionType == swarmMoveActionType.linear){
+				if (action.moveDetails.moveActionType == swarmMoveActionType.linear) {
 					//flip over x axis
-					action.moveDetails.moveTarget = new Vector3(action.moveDetails.moveTarget.x,action.moveDetails.moveTarget.y-5);
+				} else if (action.moveDetails.moveActionType == swarmMoveActionType.bezier) {
+					int counter = 0;
+					foreach (Vector3 vector in action.moveDetails.bezierVectors) {
+						action.moveDetails.bezierVectors [counter] = new Vector3 (action.moveDetails.bezierVectors [counter].x, action.moveDetails.bezierVectors [counter].y - 5);
+						counter += 1;
+					}
 				}
+
+				action.moveDetails.moveTarget = new Vector3 (action.moveDetails.moveTarget.x, action.moveDetails.moveTarget.y - 5);
 			}
 		}
 		return this;

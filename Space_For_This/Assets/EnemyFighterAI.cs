@@ -12,6 +12,9 @@ public class EnemyFighterAI : MonoBehaviour {
 	int currentActionPosition;
 	Vector3 currentMoveTarget = Vector3.zero;
 	float currentMoveTime;
+	Vector3 nextMoveTarget = Vector3.zero;
+	float nextMoveTime;
+	bool spawning = true;
 
 	public float shipSpeed;
 	public shipType shipType;
@@ -43,7 +46,6 @@ public class EnemyFighterAI : MonoBehaviour {
 		ship.weapons [0] = Weapon.createBasicEnemyWeapon ();
 		ship.isComponent = isComponent;
 		ship.componentType = componentType;
-
 		//instantiate weapons based on ship type
 
 		switch (shipType) {
@@ -206,73 +208,53 @@ public class EnemyFighterAI : MonoBehaviour {
 			if (currentAction == null) {
 				currentAction = swarmActions [0];
 				currentActionPosition = 0;
+				computeInitialMoveTargetAndTime ();
+				ComputeNextMoveTargetAndTime ();
+				InitiateCurrentMove ();
 			}
 			//execute the current swarm action
 			if (currentAction.actionType == swarmActionType.move) {
 
-				if (currentMoveTarget == Vector3.zero) {
-					computeMoveTargetAndTime ();
-				}
 
 				if (transform.localPosition == currentMoveTarget) {
-					//we're there - move to next action, or start over
-					if (currentActionPosition == swarmActions.Count - 1) {
+					
+					//we're at the move destination - move to next action, or start over
+					GoToNextAction();
 
-						SwarmPathAction oldAction = currentAction;
-
-						currentAction = swarmActions [0];
-						currentActionPosition = 0;
-						computeMoveTargetAndTime ();
-
-						if (oldAction.moveDetails.bezier) {
-							//starting over form bezier - compute move target to be final bezier vector
-							currentMoveTarget = oldAction.moveDetails.bezierVectors[oldAction.moveDetails.bezierVectors.Length-1];
-							 
-						}
-
-					} else {
-						currentAction = swarmActions [currentActionPosition + 1];
-						currentActionPosition += 1;
-						if (currentAction.actionType == swarmActionType.move) {
-							computeMoveTargetAndTime ();
-						}
-					}
-				} else { 
-					if (LeanTween.isTweening (this.gameObject)) {
-					} else {
-						switch (currentAction.moveDetails.moveActionType) {
-							case swarmMoveActionType.linear:
-								LeanTween.moveLocal ( this.gameObject,currentMoveTarget, currentMoveTime);
-								break;
-							case swarmMoveActionType.bezier:
-								//note the bad approximation of move time. Tough to cheaply predict the length of a bezier
-								//curve based on it's control vectors
-							LeanTween.moveLocal (this.gameObject, currentAction.moveDetails.bezierVectors, 1.2f * currentMoveTime).setRepeat(0);
-							break;
-						}
-
-					}
-					//transform.localPosition = Vector3.MoveTowards (transform.localPosition, currentMoveTarget, step);
-				}
-			} else if (currentAction.actionType == swarmActionType.fire) {
-				//get weapon and fire at target
-
-				if (shipType != shipType.dummy) {
-					fireWeapons (currentAction.fireDetails);
-				}
-
-				if (currentActionPosition == swarmActions.Count - 1) {
-					currentAction = swarmActions [0];
-					currentActionPosition = 0;
-					computeMoveTargetAndTime ();
-				} else {
-					currentAction = swarmActions [currentActionPosition + 1];
-					currentActionPosition += 1;
+					//if the new action is a move, start moving. If firing, start firing!
 					if (currentAction.actionType == swarmActionType.move) {
-						computeMoveTargetAndTime ();
+						currentMoveTarget = nextMoveTarget;
+						currentMoveTime = nextMoveTime;
+						if(currentAction.moveDetails.bezier){
+							currentAction.moveDetails.bezierVectors [currentAction.moveDetails.bezierVectors.Length - 1] = nextMoveTarget;
+						}
+						InitiateCurrentMove ();
 					}
+
+					//find the next move action and compute now so we're ready
+
+					ComputeNextMoveTargetAndTime ();
 				}
+			}  else if (currentAction.actionType == swarmActionType.fire) {
+				if (shipType != shipType.dummy) {
+				fireWeapons (currentAction.fireDetails);
+				}
+
+				GoToNextAction ();
+
+				if (currentAction.actionType == swarmActionType.move) {
+					currentMoveTarget = nextMoveTarget;
+					currentMoveTime = nextMoveTime;
+					if(currentAction.moveDetails.bezier){
+						currentAction.moveDetails.bezierVectors [currentAction.moveDetails.bezierVectors.Length - 1] = nextMoveTarget;
+					}
+					InitiateCurrentMove ();
+				}
+
+				ComputeNextMoveTargetAndTime ();
+
 			}
+
 		} else {
 			//component update code
 			//make components fire once every X seconds. Ensure there is at least Y seconds before firings
@@ -310,16 +292,86 @@ public class EnemyFighterAI : MonoBehaviour {
 		return toReturn;
 	}
 
-	void computeMoveTargetAndTime(){
+	void GoToNextAction(){
+		if (currentActionPosition == swarmActions.Count - 1) {
+			//we're at the beginning of the path, so start over
+			currentAction = swarmActions [0];
+			currentActionPosition = 0;
+		} else {
+			//go to the next action
+			currentAction = swarmActions [currentActionPosition + 1];
+			currentActionPosition += 1;
+
+		}
+	}
+
+	void InitiateCurrentMove(){
+			switch (currentAction.moveDetails.moveActionType) {
+			case swarmMoveActionType.linear:
+				LeanTween.moveLocal ( this.gameObject,currentMoveTarget, currentMoveTime);
+				break;
+			case swarmMoveActionType.bezier:
+				//note the bad approximation of move time. Tough to cheaply predict the length of a bezier
+				//curve based on it's control vectors
+			currentAction.moveDetails.bezierVectors[0] = this.transform.localPosition;
+				LeanTween.moveLocal (this.gameObject, currentAction.moveDetails.bezierVectors, 1.2f * currentMoveTime);
+				break;
+			}
+	}
+
+	void computeInitialMoveTargetAndTime (){
 		float targetX = currentAction.moveDetails.moveTarget.x + Random.Range (-currentAction.moveDetails.moveTargetVariance, currentAction.moveDetails.moveTargetVariance);
 		float targetY = currentAction.moveDetails.moveTarget.y + Random.Range (-currentAction.moveDetails.moveTargetVariance, currentAction.moveDetails.moveTargetVariance);
-		if (currentAction.moveDetails.moveActionType == swarmMoveActionType.bezier) {
-			currentAction.moveDetails.bezierVectors[currentAction.moveDetails.bezierVectors.Length-1] = new Vector3 (targetX, targetY, 0);
-			currentAction.moveDetails.bezierVectors[0] = this.transform.localPosition;
-		}
+
 		currentMoveTarget = new Vector3 (targetX, targetY, 0);
 		float currentMoveDistance = (currentMoveTarget - this.transform.localPosition).magnitude;
-		currentMoveTime = currentMoveDistance/currentAction.moveDetails.moveSpeed;
+
+		if (currentAction.moveDetails.bezier) {
+			currentAction.moveDetails.bezierVectors [currentAction.moveDetails.bezierVectors.Length - 1] = currentMoveTarget;
+			//currentMoveDistance = currentMoveDistance * ((float)currentAction.moveDetails.bezierVectors.Length / 4f) * 1.2f;
+		}
+
+		currentMoveTime = currentMoveDistance / currentAction.moveDetails.moveSpeed;
+	}
+
+	void ComputeNextMoveTargetAndTime()
+	{
+		SwarmPathAction nextMoveAction = null;
+
+		int nextMoveIndex = currentActionPosition;
+
+		nextMoveIndex += 1;
+
+		while (nextMoveAction == null) {
+
+			if (nextMoveIndex > swarmActions.Count-1) {
+				nextMoveIndex = 0;
+			}
+
+			if (swarmActions [nextMoveIndex].actionType == swarmActionType.move) {
+				nextMoveAction = swarmActions [nextMoveIndex];
+				break;
+			} else {
+				nextMoveIndex += 1;
+			}
+
+		}
+			
+		float targetX = nextMoveAction.moveDetails.moveTarget.x + Random.Range (-nextMoveAction.moveDetails.moveTargetVariance, nextMoveAction.moveDetails.moveTargetVariance);
+		float targetY = nextMoveAction.moveDetails.moveTarget.y + Random.Range (-nextMoveAction.moveDetails.moveTargetVariance, nextMoveAction.moveDetails.moveTargetVariance);
+		nextMoveTarget = new Vector3 (targetX, targetY, 0);
+		float nextMoveDistance = (currentMoveTarget - nextMoveTarget).magnitude;
+
+		if (nextMoveAction.moveDetails.bezier) {
+			nextMoveAction.moveDetails.bezierVectors [nextMoveAction.moveDetails.bezierVectors.Length - 1] = nextMoveTarget;
+			//nextMoveAction.moveDetails.moveTarget = nextMoveTarget;
+			nextMoveAction.moveDetails.bezierVectors [0] = currentMoveTarget;
+			//nextMoveDistance = nextMoveDistance * ((float)currentAction.moveDetails.bezierVectors.Length / 4f) * 1.2f;
+		} else {
+			
+		}
+			
+		nextMoveTime = nextMoveDistance / nextMoveAction.moveDetails.moveSpeed;
 	}
 		
 }

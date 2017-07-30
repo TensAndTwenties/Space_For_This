@@ -20,9 +20,9 @@ public class SwarmController : MonoBehaviour {
 
 		//InvokeRepeating("AssesCurrentDifficulty",10f,10f);
 
-		//Swarm currentSwarm = Swarm.GenerateSwarmWithShape (shipType.fighter, 20, 8, 0.5f, 0.2f, swarmActionShape.lacesLeft);
+		//Swarm currentSwarm = Swarm.GenerateSwarmWithShape (shipType.fighter, 20, 8, 0.5f, 0.2f, swarmTargetType.straightAhead,swarmActionShape.circle);
 
-		foreach (Swarm currentSwarm in groupsToSpawn[2].swarms) {
+		foreach (Swarm currentSwarm in groupsToSpawn[0].swarms) {
 			coroutine = SpawnEnemies (currentSwarm);
 			StartCoroutine(coroutine);
 		}
@@ -39,7 +39,7 @@ public class SwarmController : MonoBehaviour {
 		currentSwarms = new List<Swarm>();
 
 		Swarm frigate = Swarm.GenerateSwarmWithShape (shipType.frigate,1,6,0,0,swarmTargetType.straightAhead,swarmActionShape.figureEight);
-		Swarm fighters = Swarm.GenerateSwarmWithShape (shipType.fighter,20,8,1,0.1f,swarmTargetType.atPlayer,swarmActionShape.circle);
+		Swarm fighters = Swarm.GenerateSwarmWithShape (shipType.fighter,20,8,1,0.1f,swarmTargetType.atPlayer,swarmActionShape.circle).ChildSwarm();
 		frigate.childSwarm = fighters;
 
 		currentSwarms.Add(frigate);
