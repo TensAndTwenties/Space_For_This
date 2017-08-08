@@ -231,10 +231,16 @@ public class Player_Controller : MonoBehaviour {
 			break;
 		}
 
+		//InvokeRepeating ();
+
 	}
 		
 	private void CeaseDodge (){
 		currentState = PlayerState.normal;
+	}
+
+	private void playerEcho(){
+	
 	}
 
     public void FireWeapon()
@@ -252,14 +258,32 @@ public class Player_Controller : MonoBehaviour {
 
 	public void FireSpecialWeapon()
 	{
-		foreach (FireStream fs in playerShip.weapons[1].fireStreams)
-		{
-			//InvokeRepeating("FireProjectile", 0.0F, fs.fireRate);
-			for (int i = 1; i <= playerShip.weapons [1].projectilesPerFire; i++) {
+		Weapon specialWeapon = playerShip.weapons [1];
+		switch (specialWeapon.specialType) {
+		case SpecialWeaponType.homingSwarm:
+			IEnumerator coroutine = FireProjectileMultiple (specialWeapon.fireStreams, specialWeapon.projectilesPerFire);
+			StartCoroutine(coroutine);
+			/*for (int i = 1; i <= playerShip.weapons [1].projectilesPerFire; i++) {
 				if (fs.currentCooldown <= 0f) {
 					FireProjectile (fs);
 					fs.currentCooldown = fs.fireRate;
 				}
+			}*/
+			
+			break;
+		}
+	}
+
+	private IEnumerator FireProjectileMultiple(FireStream[] fireStreams, int firings = 1){
+		foreach (FireStream fireStream in fireStreams) {
+			for (int i = 1; i <= firings; i++) {
+				GameObject newProjectileObj = Instantiate (fireStream.projectile.prefab) as GameObject;
+				newProjectileObj.transform.position = transform.position + fireStream.offset;
+				newProjectileObj.GetComponent<Projectile> ().angle = fireStream.angleOffset;
+				if (fireStream.spread > 0f) {
+					newProjectileObj.GetComponent<Projectile> ().angle = fireStream.angleOffset + 45 + Random.Range (-fireStream.spread, fireStream.spread);
+				}
+				yield return new WaitForSeconds (fireStream.fireRate);
 			}
 		}
 	}
@@ -272,7 +296,7 @@ public class Player_Controller : MonoBehaviour {
         }
     }
 
-    public void FireProjectile(FireStream fireStream)
+	public void FireProjectile(FireStream fireStream)
     {
         GameObject newProjectileObj = Instantiate(fireStream.projectile.prefab) as GameObject;
         newProjectileObj.transform.position = transform.position + fireStream.offset;

@@ -38,11 +38,11 @@ public class SwarmController : MonoBehaviour {
 		#region Fighters circling frigate
 		currentSwarms = new List<Swarm>();
 
-		Swarm frigate = Swarm.GenerateSwarmWithShape (shipType.frigate,1,6,0,0,swarmTargetType.straightAhead,swarmActionShape.figureEight);
-		Swarm fighters = Swarm.GenerateSwarmWithShape (shipType.fighter,20,8,1,0.1f,swarmTargetType.atPlayer,swarmActionShape.circle).ChildSwarm();
-		frigate.childSwarm = fighters;
+		Swarm fightersCircling_frigate = Swarm.GenerateSwarmWithShape (shipType.frigate,1,6,0,0,swarmTargetType.straightAhead,swarmActionShape.figureEight);
+		Swarm fightersCircling_fighters = Swarm.GenerateSwarmWithShape (shipType.fighter,20,8,1,0.1f,swarmTargetType.atPlayer,swarmActionShape.circle).ChildSwarm();
+		fightersCircling_frigate.childSwarm = fightersCircling_fighters;
 
-		currentSwarms.Add(frigate);
+		currentSwarms.Add(fightersCircling_frigate);
 
 		currentSwarmGroup = new SwarmGroup (currentSwarms,"fighters circling frigate");
 		groupsToReturn.Add (currentSwarmGroup);
@@ -51,18 +51,40 @@ public class SwarmController : MonoBehaviour {
 		#region Fighters Double Laces
 		currentSwarms = new List<Swarm>();
 
-		currentSwarms.Add(Swarm.GenerateSwarmWithShape (shipType.fighter,30,6,0.2f,0.2f,swarmTargetType.straightAhead,swarmActionShape.lacesLeft));
-		currentSwarms.Add(Swarm.GenerateSwarmWithShape (shipType.fighter,30,6,0.2f,0.2f,swarmTargetType.straightAhead,swarmActionShape.lacesLeft).MirrorOverX());
+		currentSwarms.Add(Swarm.GenerateSwarmWithShape (shipType.fighter,30,6,0.2f,0.2f,swarmTargetType.straightAhead,swarmActionShape.laces));
+		currentSwarms.Add(Swarm.GenerateSwarmWithShape (shipType.fighter,30,6,0.2f,0.2f,swarmTargetType.straightAhead,swarmActionShape.laces).MirrorOverX());
 
 		currentSwarmGroup = new SwarmGroup (currentSwarms,"fighters double laces");
 		groupsToReturn.Add (currentSwarmGroup);
 		#endregion
 
 		#region Fighters Double Steps
+		/*
 		currentSwarms = new List<Swarm>();
-		currentSwarms.Add(Swarm.GenerateSwarmWithShape (shipType.fighter,20,8,1,0.1f,swarmTargetType.atPlayer,swarmActionShape.circle));
+		currentSwarms.Add(Swarm.GenerateSwarmWithShape (shipType.fighter,20,8,1,0.1f,swarmTargetType.atPlayer,swarmActionShape.laces));
+		currentSwarms.Add(Swarm.GenerateSwarmWithShape (shipType.fighter,20,8,1,0.1f,swarmTargetType.atPlayer,swarmActionShape.laces).MirrorOverX());
 
-		currentSwarmGroup = new SwarmGroup (currentSwarms,"fighters double laces");
+		currentSwarmGroup = new SwarmGroup (currentSwarms,"fighters double steps");
+		groupsToReturn.Add (currentSwarmGroup);
+		*/
+		#endregion
+
+		#region Fighters Circling Frigates ArcSwoop
+		currentSwarms = new List<Swarm>();
+
+		Swarm FightersCirclingFrigatesArcswoop_frigate = Swarm.GenerateSwarmWithShape (shipType.frigate,1,6,0,0,swarmTargetType.straightAhead,swarmActionShape.arcswoop);
+		Swarm FightersCirclingFrigatesArcswoop_fighters = Swarm.GenerateSwarmWithShape (shipType.fighter,20,8,1,0.1f,swarmTargetType.atPlayer,swarmActionShape.circle).ChildSwarm();
+		FightersCirclingFrigatesArcswoop_frigate.childSwarm = FightersCirclingFrigatesArcswoop_fighters;
+
+		currentSwarms.Add(FightersCirclingFrigatesArcswoop_frigate);
+
+		Swarm FightersCirclingFrigatesArcswoop_frigate2 = Swarm.GenerateSwarmWithShape (shipType.frigate,1,6,0,0,swarmTargetType.straightAhead,swarmActionShape.arcswoop).MirrorOverX();
+		Swarm FightersCirclingFrigatesArcswoop_fighters2 = Swarm.GenerateSwarmWithShape (shipType.fighter,20,8,1,0.1f,swarmTargetType.atPlayer,swarmActionShape.circle).ChildSwarm();
+		FightersCirclingFrigatesArcswoop_frigate2.childSwarm = FightersCirclingFrigatesArcswoop_fighters2;
+
+		currentSwarms.Add(FightersCirclingFrigatesArcswoop_frigate2);
+
+		currentSwarmGroup = new SwarmGroup (currentSwarms,"Fighters Circling Frigates ArcSwoop");
 		groupsToReturn.Add (currentSwarmGroup);
 		#endregion
 

@@ -111,7 +111,18 @@ public class EnemyFighterAI : MonoBehaviour {
 					newComponent.GetComponent<EnemyFighterAI> ().ship.weapons [0] = Weapon.createBasicEnemyRail ();
 					break;
 				}
-					
+
+				//if its a right component change the weapon offset to be -x
+				if (newComponent.name.Contains ("left") && newComponent.GetComponent<EnemyFighterAI> ().ship.weapons.Length > 0) {
+					foreach (Weapon weapon in newComponent.GetComponent<EnemyFighterAI> ().ship.weapons) {
+						if (weapon != null) {
+							foreach (FireStream firestream in weapon.fireStreams) {
+								firestream.offset = new Vector3 (-firestream.offset.x, firestream.offset.y);
+							}
+						}
+					}
+				}
+
 			}
 		}
 
@@ -141,25 +152,48 @@ public class EnemyFighterAI : MonoBehaviour {
 
 	public IEnumerator FireProjectile(FireStream fireStream, swarmTargetType targetType, int firings )
 	{
-		for(int i = 1; i <= firings; i++){
-		GameObject newProjectileObj = Instantiate(fireStream.projectile.prefab) as GameObject;
-		newProjectileObj.transform.position = transform.position + fireStream.offset;
-		newProjectileObj.GetComponent<Projectile>().angle = fireStream.angleOffset;
-		newProjectileObj.GetComponent<Projectile>().enemyProjectile = true;
-		newProjectileObj.GetComponent<Projectile>().targetType = targetType;
+		if (fireStream.isBeam) {
+			//for beam weapons
+			//first pre-fire beam. Display marker which grows for the fireRate length
+			//after pre-fire, fireBeam
+			GameObject preFirePrefab = Resources.Load("beam_pre_fire_frigate") as GameObject;
+			GameObject newPreFireObj = Instantiate (preFirePrefab) as GameObject;
+			newPreFireObj.GetComponent<SpriteRenderer> ().color = new Color (newPreFireObj.GetComponent<SpriteRenderer> ().color.r, newPreFireObj.GetComponent<SpriteRenderer> ().color.g, newPreFireObj.GetComponent<SpriteRenderer> ().color.b, 0.5f);
+			newPreFireObj.transform.parent = this.transform;
+			newPreFireObj.transform.localPosition = preFirePrefab.transform.position + fireStream.offset;
+			LeanTween.scaleX (newPreFireObj, 8f, fireStream.fireRate); 
+			yield return new WaitForSeconds (fireStream.fireRate);
+			Destroy (newPreFireObj);
 
+			GameObject newProjectileObj = Instantiate (fireStream.projectile.prefab) as GameObject;
+			newProjectileObj.transform.parent = this.transform;
+			newProjectileObj.transform.localPosition = newProjectileObj.transform.position + fireStream.offset;
+			Vector3 size = newProjectileObj.GetComponent<Renderer>().bounds.size;
+			yield return new WaitForSeconds (fireStream.fireRate);
+			Destroy (newProjectileObj);
 
-		if(targetType == swarmTargetType.atPlayer){
-			Vector3 playerTarget = computeFireTarget(fireStream.offset);
-			newProjectileObj.GetComponent<Projectile> ().dumbTarget = playerTarget;
 		}
+			else {
+			//for projectiles - missles and bullets
+			for (int i = 1; i <= firings; i++) {
+				GameObject newProjectileObj = Instantiate (fireStream.projectile.prefab) as GameObject;
+				newProjectileObj.transform.position = transform.position + fireStream.offset;
+				newProjectileObj.GetComponent<Projectile> ().angle = fireStream.angleOffset;
+				newProjectileObj.GetComponent<Projectile> ().enemyProjectile = true;
+				newProjectileObj.GetComponent<Projectile> ().targetType = targetType;
 
-		if (fireStream.spread > 0f)
-		{
-			newProjectileObj.GetComponent<Projectile>().angle = fireStream.angleOffset + 45 + Random.Range(-fireStream.spread, fireStream.spread);
-		}
 
-		yield return new WaitForSeconds(fireStream.fireRate);
+				if (targetType == swarmTargetType.atPlayer) {
+					Vector3 playerTarget = computeFireTarget (fireStream.offset);
+					newProjectileObj.GetComponent<Projectile> ().dumbTarget = playerTarget;
+				}
+
+				if (fireStream.spread > 0f) {
+					newProjectileObj.GetComponent<Projectile> ().angle = fireStream.angleOffset + 45 + Random.Range (-fireStream.spread, fireStream.spread);
+				}
+
+				yield return new WaitForSeconds (fireStream.fireRate);
+			}
 		}
 	}
 
@@ -306,15 +340,16 @@ public class EnemyFighterAI : MonoBehaviour {
 	}
 
 	void InitiateCurrentMove(){
+		//cool ease? LeanTween.moveLocal ( this.gameObject,currentMoveTarget, currentMoveTime).setEase(LeanTweenType.easeInOutSine)
 			switch (currentAction.moveDetails.moveActionType) {
 			case swarmMoveActionType.linear:
-				LeanTween.moveLocal ( this.gameObject,currentMoveTarget, currentMoveTime);
+			LeanTween.moveLocal ( this.gameObject,currentMoveTarget, currentMoveTime);
 				break;
 			case swarmMoveActionType.bezier:
 				//note the bad approximation of move time. Tough to cheaply predict the length of a bezier
 				//curve based on it's control vectors
 			currentAction.moveDetails.bezierVectors[0] = this.transform.localPosition;
-				LeanTween.moveLocal (this.gameObject, currentAction.moveDetails.bezierVectors, 1.2f * currentMoveTime);
+			LeanTween.moveLocal (this.gameObject, currentAction.moveDetails.bezierVectors, 1.2f * currentMoveTime);
 				break;
 			}
 	}

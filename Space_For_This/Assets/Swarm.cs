@@ -35,8 +35,11 @@ public class Swarm {
 		case swarmActionShape.circle:
 			actions = Circle (moveSpeed, moveVariance, targetType);
 			break;
-		case swarmActionShape.lacesLeft:
-			actions = LacesLeft (moveSpeed, moveVariance, targetType);
+		case swarmActionShape.laces:
+			actions = Laces (moveSpeed, moveVariance, targetType);
+			break;
+		case swarmActionShape.arcswoop:
+			actions = ArcSwoop (moveSpeed, moveVariance, targetType);
 			break;
 		}
 			
@@ -115,8 +118,50 @@ public class Swarm {
 
 		return actions;
 	}
+
+	private static List<SwarmPathAction> ArcSwoop(float moveSpeed, float moveVariance, swarmTargetType targetType){
+		List<SwarmPathAction> actions = new List<SwarmPathAction> ();
+
+		actions.Add (
+			new SwarmPathAction (new SwarmMoveDetails (
+				new Vector3(-4f,9,0)
+				, moveSpeed, moveVariance))
+		);
+
+		actions.Add (
+			new SwarmPathAction (new SwarmMoveDetails (
+				new Vector3(-4f,7,0)
+				, moveSpeed, moveVariance))
+		);
+			
+		Vector3[] bezierVectors = new Vector3[4];
+		bezierVectors [0] = new Vector3 (-4,7,0);
+		bezierVectors [1] = new Vector3 (4,9,0);
+		bezierVectors [2] = new Vector3 (-4, 5,0);
+		bezierVectors [3] = new Vector3 (4, 7,0);
+
+		actions.Add (
+			new SwarmPathAction (new SwarmMoveDetails (
+				bezierVectors
+				, moveSpeed, moveVariance))
+		);
+
+		bezierVectors = new Vector3[4];
+		bezierVectors [0] = new Vector3 (4,7,0);
+		bezierVectors [1] = new Vector3 (-4,0,0);
+		bezierVectors [2] = new Vector3 (4, 0,0);
+		bezierVectors [3] = new Vector3 (-4, 7,0);
+
+		actions.Add (
+			new SwarmPathAction (new SwarmMoveDetails (
+				bezierVectors
+				, moveSpeed, moveVariance))
+		);
+
+		return actions;
+	}
 		
-	private static List<SwarmPathAction> LacesLeft(float moveSpeed, float moveVariance, swarmTargetType targetType){
+	private static List<SwarmPathAction> Laces(float moveSpeed, float moveVariance, swarmTargetType targetType){
 
 		List<SwarmPathAction> actions = new List<SwarmPathAction> ();
 
@@ -450,6 +495,6 @@ public class SwarmGroup{
 public enum swarmMoveActionType { linear, bezier, rotation}
 public enum swarmActionType { move, fire, formation } 
 public enum swarmTargetType { straightAhead, atPlayer}
-public enum swarmActionShape { figureEight, diamond, circle, lacesLeft}
+public enum swarmActionShape { figureEight, diamond, circle, laces, arcswoop}
 public enum shipType { fighter, frigate, drone, dummy, component, playerShip1 }
 public enum componentType { missile, shield, rail }

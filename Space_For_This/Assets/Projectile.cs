@@ -15,6 +15,7 @@ public class Projectile : MonoBehaviour
     Camera gameCamera;
     public GameObject explosion;
     public bool homing;
+	public bool isBeam;
     public Vector3 distanceBeforeHome;
     private GameObject homingTarget;
     List<GameObject> targets = new List<GameObject>();
@@ -53,12 +54,16 @@ public class Projectile : MonoBehaviour
 			
 			target.GetComponent<EnemyFighterAI> ().applyDamage (damage);
 
-			DestroyProjectile ();
+			if (!isBeam) {
+				DestroyProjectile ();
+			}
 		} else if (target.tag == "Player" && enemyProjectile) {
 			if (!(target.GetComponent<Player_Controller> ().currentState == PlayerState.dodging)) {
 				target.GetComponent<Player_Controller> ().playerShip.applyDamage (damage);
 
-				DestroyProjectile ();
+				if (!isBeam) {
+					DestroyProjectile ();
+				}
 			}
 		}
     }
@@ -74,59 +79,53 @@ public class Projectile : MonoBehaviour
 
 
     void Update()
-    {
-		if (transform.position.y > gameCamera.GetComponent<CameraScript>().maxY + 1 || transform.position.y < gameCamera.GetComponent<CameraScript>().minY - 1 || transform.position.x > gameCamera.GetComponent<CameraScript>().maxX + 1 || transform.position.x < gameCamera.GetComponent<CameraScript>().minX - 1)
-        {
-            Destroy(this.gameObject);
-        }
-
-        stepBase = speed * Time.deltaTime;
-        stepY = stepBase;
-        stepX = 0;
-
-        if (angle != 0)
-        {
-            float radians = angle * Mathf.Deg2Rad;
-            var ca = Mathf.Cos(radians);
-            var sa = Mathf.Sin(radians);
-
-            stepX = ca * stepBase - sa * stepBase;
-            stepY = sa * stepBase + ca * stepBase;
-        }
-
-        if (homing)
-        {
-            if (homingTarget == null)
-            {
-                if (targets.Count > 0)
-                {
-                    int homingTargetIndex = Random.Range(0, targets.Count);
-                    homingTarget = targets[homingTargetIndex];
-                }
-                else
-                {
-                    Destroy(gameObject);
-                }
-
-            }
-            else
-            {
-				if (!isHoming){
-					IEnumerator coroutine = ExecuteHomingArc (homingTarget);
-					StartCoroutine (coroutine); // execute arcing, then head towards enemies
-				}
-            }
-        }
-        else {
-			if (enemyProjectile && targetType == swarmTargetType.straightAhead) {
-				this.transform.position = new Vector3(transform.position.x + stepX, transform.position.y - stepY, transform.position.z);
-			} else if (enemyProjectile && targetType == swarmTargetType.atPlayer){
-				transform.position = Vector3.MoveTowards (transform.position, dumbTarget, stepBase);
-			} else{
-            	this.transform.position = new Vector3(transform.position.x + stepX, transform.position.y + stepY, transform.position.z);
+	{
+		if(!isBeam){
+		
+			if (transform.position.y > gameCamera.GetComponent<CameraScript> ().maxY + 1 || transform.position.y < gameCamera.GetComponent<CameraScript> ().minY - 1 || transform.position.x > gameCamera.GetComponent<CameraScript> ().maxX + 1 || transform.position.x < gameCamera.GetComponent<CameraScript> ().minX - 1) {
+				Destroy (this.gameObject);
 			}
-		}    
+
+			stepBase = speed * Time.deltaTime;
+			stepY = stepBase;
+			stepX = 0;
+
+			if (angle != 0) {
+				float radians = angle * Mathf.Deg2Rad;
+				var ca = Mathf.Cos (radians);
+				var sa = Mathf.Sin (radians);
+
+				stepX = ca * stepBase - sa * stepBase;
+				stepY = sa * stepBase + ca * stepBase;
+			}
+
+			if (homing) {
+				if (homingTarget == null) {
+					if (targets.Count > 0) {
+						int homingTargetIndex = Random.Range (0, targets.Count);
+						homingTarget = targets [homingTargetIndex];
+					} else {
+						Destroy (gameObject);
+					}
+
+				} else {
+					if (!isHoming) {
+						IEnumerator coroutine = ExecuteHomingArc (homingTarget);
+						StartCoroutine (coroutine); // execute arcing, then head towards enemies
+					}
+				}
+			} else {
+				if (enemyProjectile && targetType == swarmTargetType.straightAhead) {
+					this.transform.position = new Vector3 (transform.position.x + stepX, transform.position.y - stepY, transform.position.z);
+				} else if (enemyProjectile && targetType == swarmTargetType.atPlayer) {
+					transform.position = Vector3.MoveTowards (transform.position, dumbTarget, stepBase);
+				} else {
+					this.transform.position = new Vector3 (transform.position.x + stepX, transform.position.y + stepY, transform.position.z);
+				}
+			}  
+		}
     }
+	
 
 	private IEnumerator ExecuteHomingArc(GameObject target){
 		isHoming = true;

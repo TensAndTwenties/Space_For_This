@@ -7,6 +7,7 @@ public class Weapon
     public FireStream[] fireStreams;
     GameObject playerShip;
 	public int projectilesPerFire; //for player weapons that fire more than once on activation
+	public SpecialWeaponType specialType;
 
 	// Use this for initialization
 	void Awake () {
@@ -14,8 +15,9 @@ public class Weapon
         playerShip = GameObject.Find("player");
     }
 
-    public Weapon(FireStream[] _fireStreams) {
+	public Weapon(FireStream[] _fireStreams, SpecialWeaponType _specialType = SpecialWeaponType.nonspecial) {
         fireStreams = _fireStreams;
+		specialType = _specialType;
     }
 
 	public static Weapon createBasicEnemyWeapon(){
@@ -58,7 +60,7 @@ public class Weapon
 		Projectile projectile = projectilePrefab.GetComponent<Projectile>();
 		projectile.prefab = projectilePrefab;
 
-		fireStreams[0] = new FireStream(0.01f, projectile, new Vector3(0f, 0, 0),0);
+		fireStreams[0] = new FireStream(1f, projectile, new Vector3(0.16f, 0, 0),0,0,true);
 
 		Weapon newWeapon = new Weapon(fireStreams);
 
@@ -104,17 +106,18 @@ public class Weapon
 	public static Weapon createHomingSwarm()
 	{
 
-		FireStream[] fireStreams = new FireStream[1];
+		FireStream[] fireStreams = new FireStream[2];
 
 		GameObject projectilePrefab = Resources.Load("missile_1") as GameObject;
 		Projectile projectile = projectilePrefab.GetComponent<Projectile>();
 		projectile.prefab = projectilePrefab;
 
-		fireStreams[0] = new FireStream(0.1f, projectile, new Vector3(0, 0, 0));
+		fireStreams[0] = new FireStream(0.1f, projectile, new Vector3(-0.6f, 0, 0));
+		fireStreams[1] = new FireStream(0.1f, projectile, new Vector3(0.6f, 0, 0));
 
-		Weapon newWeapon = new Weapon(fireStreams);
+		Weapon newWeapon = new Weapon(fireStreams,SpecialWeaponType.homingSwarm);
 
-		newWeapon.projectilesPerFire = 20;
+		newWeapon.projectilesPerFire = 5;
 
 		return newWeapon;
 	}
@@ -167,14 +170,17 @@ public class FireStream {
     public Vector3 offset { get; set; }
     public float angleOffset { get; set; }
     public float spread { get; set; }
+	public bool isBeam { get; set; }
 
-    public FireStream(float _fireRate, Projectile _projectile, Vector3 _offset, float _angleOffset = 0, float _spread = 0) {
+	public FireStream(float _fireRate, Projectile _projectile, Vector3 _offset, float _angleOffset = 0, float _spread = 0, bool _isBeam = false) {
         fireRate = _fireRate;
         projectile = _projectile;
         offset = _offset;
         angleOffset = _angleOffset;
         spread = _spread;
+		isBeam = _isBeam;
     }
 
 }
 
+public enum SpecialWeaponType { nonspecial, homingSwarm, beam}
