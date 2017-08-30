@@ -231,16 +231,19 @@ public class Player_Controller : MonoBehaviour {
 			break;
 		}
 
-		//InvokeRepeating ();
+		InvokeRepeating("playerEcho",0f,0.03f);
 
 	}
 		
 	private void CeaseDodge (){
+		CancelInvoke();
 		currentState = PlayerState.normal;
 	}
 
 	private void playerEcho(){
-	
+		Object echo = Resources.Load ("echo");
+		GameObject newEcho = Instantiate (echo) as GameObject;
+		newEcho.transform.position = new Vector3 (this.transform.position.x, this.transform.position.y);
 	}
 
     public void FireWeapon()
@@ -272,6 +275,10 @@ public class Player_Controller : MonoBehaviour {
 			
 			break;
 		}
+	}
+
+	private void GeneratePlayerEcho(){
+		
 	}
 
 	private IEnumerator FireProjectileMultiple(FireStream[] fireStreams, int firings = 1){
