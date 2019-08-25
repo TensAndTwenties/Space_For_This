@@ -215,7 +215,6 @@ public class EnemyFighterAI : MonoBehaviour {
 	}
 
 	void destroyShip(){
-		Destroy(this.gameObject);
 
 		if (Random.Range(0, 10) == 1) {
 			
@@ -229,6 +228,8 @@ public class EnemyFighterAI : MonoBehaviour {
 				newScrap.GetComponent<Scrap> ().scrapAmount = scrapAmount;
 			}
 		}
+
+		Destroy(this.gameObject);
 	}
 	// Update is called once per frame
 	void Update () {
@@ -238,7 +239,7 @@ public class EnemyFighterAI : MonoBehaviour {
 			destroyShip ();
 		}
 
-		if (!ship.isComponent) {
+        if (!ship.isComponent) {
 			if (currentAction == null) {
 				currentAction = swarmActions [0];
 				currentActionPosition = 0;
@@ -363,7 +364,12 @@ public class EnemyFighterAI : MonoBehaviour {
 
 		if (currentAction.moveDetails.bezier) {
 			currentAction.moveDetails.bezierVectors [currentAction.moveDetails.bezierVectors.Length - 1] = currentMoveTarget;
-			//currentMoveDistance = currentMoveDistance * ((float)currentAction.moveDetails.bezierVectors.Length / 4f) * 1.2f;
+
+			//assume a bezier set defines ONE circle of radius bezierVecors[2].magnitude - pi*r for half circle path
+			//can expand later to handle more complicated bezier sets
+
+			currentMoveDistance = Mathf.PI * currentAction.moveDetails.bezierVectors [2].magnitude;
+
 		}
 
 		currentMoveTime = currentMoveDistance / currentAction.moveDetails.moveSpeed;

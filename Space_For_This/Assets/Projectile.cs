@@ -32,18 +32,7 @@ public class Projectile : MonoBehaviour
 
         if (homing)
         {
-            GameObject[] targetsArray = GameObject.FindGameObjectsWithTag("Enemy");
-
-            foreach (GameObject target in targetsArray)
-            {
-                targets.Add(target);
-            }
-
-            if (targets.Count > 0)
-            {
-                int homingTargetIndex = Random.Range(0, targets.Count);
-                homingTarget = targets[homingTargetIndex];
-            }
+			FindRandomHomingTarget ();
         }
     }
 
@@ -67,6 +56,22 @@ public class Projectile : MonoBehaviour
 			}
 		}
     }
+
+	void FindRandomHomingTarget(){
+		//finds an available enemy target for homing.
+		GameObject[] targetsArray = GameObject.FindGameObjectsWithTag("Enemy");
+
+		foreach (GameObject target in targetsArray)
+		{
+			targets.Add(target);
+		}
+
+		if (targets.Count > 0)
+		{
+			int homingTargetIndex = Random.Range(0, targets.Count);
+			homingTarget = targets[homingTargetIndex];
+		}
+	}
 
 	void DestroyProjectile(){
 		if (explosion) {
@@ -101,19 +106,22 @@ public class Projectile : MonoBehaviour
 
 			if (homing) {
 				if (homingTarget == null) {
-					if (targets.Count > 0) {
-						int homingTargetIndex = Random.Range (0, targets.Count);
-						homingTarget = targets [homingTargetIndex];
-					} else {
+
+					FindRandomHomingTarget ();
+
+					if(homingTarget == null)
+					{
 						Destroy (gameObject);
 					}
 
+
 				} else {
 					if (!isHoming) {
-						IEnumerator coroutine = ExecuteHomingArc (homingTarget);
+						IEnumerator coroutine = ExecuteHomingArc (homingTarget.transform.position);
 						StartCoroutine (coroutine); // execute arcing, then head towards enemies
 					}
 				}
+					
 			} else {
 				if (enemyProjectile && targetType == swarmTargetType.straightAhead) {
 					this.transform.position = new Vector3 (transform.position.x + stepX, transform.position.y - stepY, transform.position.z);
@@ -127,21 +135,39 @@ public class Projectile : MonoBehaviour
     }
 	
 
-	private IEnumerator ExecuteHomingArc(GameObject target){
+	private IEnumerator ExecuteHomingArc(Vector3 targetPosition){
 		isHoming = true;
 		float xPos = this.transform.position.x;
 		float yPos = this.transform.position.y;
-		float arcTime = 1.2f;
-		Vector3[] bezierVectors = new Vector3[4];
-		bezierVectors [0] = new Vector3 (xPos,yPos,0); //StartPoint
-		bezierVectors [1] = new Vector3 (xPos-4,yPos,0); //EndControl
-		bezierVectors [2] = new Vector3 (xPos-1,yPos,0); //StartControl
-		bezierVectors [3] = new Vector3 (xPos-4,yPos+4,0); //EndPoint
+		float arcTime = 0.7f;
+        int rand = Random.Range(1, 3);
+        Vector3[] bezierVectors = new Vector3[4];
+
+        if (rand == 1)
+        {
+            bezierVectors[0] = new Vector3(xPos, yPos, 0); //StartPoint
+            bezierVectors[1] = new Vector3(xPos - 4, yPos, 0); //EndControl
+            bezierVectors[2] = new Vector3(xPos - 1, yPos, 0); //StartControl
+            bezierVectors[3] = new Vector3(xPos - 4, yPos + 4, 0); //EndPoint
+        }
+        else {
+            bezierVectors[0] = new Vector3(xPos, yPos, 0); //StartPoint
+            bezierVectors[1] = new Vector3(xPos + 4, yPos, 0); //EndControl
+            bezierVectors[2] = new Vector3(xPos + 1, yPos, 0); //StartControl
+            bezierVectors[3] = new Vector3(xPos + 4, yPos + 4, 0); //EndPoint
+
+        }
 
 		LeanTween.move (this.gameObject, bezierVectors, arcTime).setRepeat(0);
 		yield return new WaitForSeconds (arcTime);
-		LeanTween.move (this.gameObject, target.transform, arcTime).setRepeat(0);
 
+        if (rand == 1)
+        {
+            LeanTween.move(this.gameObject, targetPosition + new Vector3(10, 10, 0), arcTime).setRepeat(0);
+        } else
+        {
+            LeanTween.move(this.gameObject, targetPosition + new Vector3(-10, 10, 0), arcTime).setRepeat(0);
+        }
 
 	}
 }

@@ -1,0 +1,47 @@
+﻿<Properties StartupConfiguration="{2C500D71-39F1-0A78-3EA9-0013984AAFA1}|">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Player_Controller.cs">
+    <Files>
+      <File FileName="Assets/Projectile.cs" Line="23" Column="17" />
+      <File FileName="Assets/Player_Controller.cs" Line="1" Column="1" />
+      <File FileName="Assets/EnemyFighterAI.cs" />
+      <File FileName="Assets/Weapon.cs" />
+      <File FileName="Assets/SwarmController.cs" Line="20" Column="49" />
+      <File FileName="Assets/Ship.cs" />
+      <File FileName="Assets/CameraScript.cs" />
+      <File FileName="Assets/FPSDisplay.cs" />
+      <File FileName="Assets/Explosion.cs" />
+      <File FileName="Assets/UIcontroller.cs" />
+      <File FileName="Assets/ExtensionMethods.cs" />
+      <File FileName="Assets/Shield.cs" />
+      <File FileName="Assets/Plugins/LeanTween/LeanTween.cs" />
+      <File FileName="Assets/Scrap.cs" />
+      <File FileName="Assets/Swarm.cs" />
+      <File FileName="Assets/Beam.cs" />
+      <File FileName="Assets/Echo.cs" />
+      <File FileName="Assets/Editor/CrossPlatformInput/CrossPlatformInputInitialize.cs" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Space_For_This" expanded="True">
+            <Node name="Assets" expanded="True">
+              <Node name="Editor" expanded="True">
+                <Node name="CrossPlatformInput" expanded="True" />
+              </Node>
+              <Node name="Player_Controller.cs" selected="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="cd1d4365-5c0c-4cfb-8b0e-b78f75691e72" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/Rob/Desktop/Misc/gamedev/Space_For_This/Space_For_This/Assets/EnemyFighterAI.cs" relfile="Assets/EnemyFighterAI.cs" line="175" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>

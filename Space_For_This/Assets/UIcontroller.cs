@@ -26,7 +26,7 @@ public class UIcontroller : MonoBehaviour {
 	}
 
 	void OnGUI(){
-		GUI.Label(new Rect(10, 10, 300, 20), "Difficulty Assesment: " + GameObject.Find("SwarmController").GetComponent<SwarmController>().currentDifficultyLevel.ToString());
+		GUI.Label(new Rect(10, 10, 300, 20), "Time until next wave: " + GameObject.Find("SwarmController").GetComponent<SwarmController>().timeToNextSwarm.ToString());
 		GUI.Label(new Rect(10, 20, 300, 20), "Current Scrap: " + GameObject.Find("Player").GetComponent<Player_Controller>().currentScrap.ToString());
 	}
 

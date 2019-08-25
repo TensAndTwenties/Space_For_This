@@ -9,27 +9,32 @@ public class SwarmController : MonoBehaviour {
 	public float currentDifficultyLevel = 0.0f;
 	private List<Swarm> activeSwarms; //all active swarms
 	private List<SwarmGroup> groupsToSpawn; //possible swarm groups to spwan
+    bool spawnDepressed;
+    public float timeToNextSwarm = 15f;
 
 	//private GameObject spawnTarget;
 	void Awake () {
-		//spawnTarget = GameObject.Find ("SwarmParent");
-		//make a swarm
 
 		groupsToSpawn = instantiateSwarmGroups ();
-		//Swarm testSwarm = Swarm.GenerateSwarmWithShape (shipType.fighter,70,8,1,0.8f,swarmActionShape.figureEight);
 
-		//InvokeRepeating("AssesCurrentDifficulty",10f,10f);
+        //InvokeRepeating("AssesCurrentDifficulty",10f,10f);
 
-		//Swarm currentSwarm = Swarm.GenerateSwarmWithShape (shipType.fighter, 20, 8, 0.5f, 0.2f, swarmTargetType.straightAhead,swarmActionShape.circle);
-
-		foreach (Swarm currentSwarm in groupsToSpawn[0].swarms) {
+        Invoke("SpawnNewSwarm", 1f);
+        /*
+		foreach (Swarm currentSwarm in groupsToSpawn[1].swarms) {
 			coroutine = SpawnEnemies (currentSwarm);
 			StartCoroutine(coroutine);
 		}
-
+        */
+        
 	}
 
-	private List<SwarmGroup> instantiateSwarmGroups(){
+    void Update()
+    {
+        
+    }
+
+    private List<SwarmGroup> instantiateSwarmGroups(){
 		//create pre-defined, designed groups of swarms to spawn
 		List<SwarmGroup> groupsToReturn = new List<SwarmGroup>();
 		List<Swarm> currentSwarms;
@@ -92,70 +97,22 @@ public class SwarmController : MonoBehaviour {
 
 	}
 
-	private void AssesCurrentDifficulty(){
-		//invoked repeatedly
-		float currentTotalDifficulty = 0.0f;
-		GameObject[] currentEnemies =  GameObject.FindGameObjectsWithTag("Enemy");
-		foreach (GameObject enemy in currentEnemies) {
-				float shipDifficulty = 0.0f;
-
-			if (enemy.GetComponent<EnemyFighterAI>().isComponent) {
-					//component difficulty calculated seperately
-				switch (enemy.GetComponent<EnemyFighterAI>().componentType) {
-					case componentType.missile:
-						shipDifficulty = 5;
-						break;
-					case componentType.shield:
-						shipDifficulty = 7;
-						break;
-					case componentType.rail:
-						shipDifficulty = 5;
-						break;
-					}
-				} else {
-					//ship difficulty
-				switch (enemy.GetComponent<EnemyFighterAI>().shipType) {
-					case shipType.fighter:
-						shipDifficulty = 2f;
-						break;
-					case shipType.drone:
-						shipDifficulty = 1f;
-						break;
-					case shipType.frigate:
-						shipDifficulty = 10f;
-						break;
-					}
-				}
-			currentTotalDifficulty += shipDifficulty;
-			}
-		
-		currentDifficultyLevel = currentTotalDifficulty;
-
-		if (currentDifficultyLevel < maxDifficultyLevel * 0.7f) {
-			//spawn more
-			int swarmTypeRoll = Random.Range(1,2);
-
-			switch (swarmTypeRoll) {
-			case 1:
-				//spawn random pre-defined group
-
-
-				var values = componentType.GetValues (typeof(componentType));
-				swarmActionShape randomShape = (swarmActionShape)values.GetValue (Random.Range (0, values.Length));
-				float spawnVariance = Random.Range (0.2f, 0.8f);
-				float moveVariance = Random.Range (0.1f, 0.5f);
-				int numberOfShips = Random.Range (20, 80);
-
-				Swarm currentSwarm = Swarm.GenerateSwarmWithShape (shipType.fighter,numberOfShips,8,moveVariance,spawnVariance,swarmTargetType.atPlayer,randomShape);
-				coroutine = SpawnEnemies (currentSwarm);
-				StartCoroutine(coroutine);
-				break;
-			case 2:
-				//spawn random swarm from pattern
-				break;
-			}
-		}
-	}
+    private void SpawnNewSwarm()
+    {
+        int swarmCount = groupsToSpawn.Count;
+        int swarmIndexToSpawn = Random.Range(0, swarmCount-1);
+        foreach (Swarm currentSwarm in groupsToSpawn[swarmIndexToSpawn].swarms)
+        {
+            coroutine = SpawnEnemies(currentSwarm);
+            StartCoroutine(coroutine);
+        }
+        if (timeToNextSwarm > 10)
+        {
+            timeToNextSwarm -= 1;
+        }
+        Invoke("SpawnNewSwarm", timeToNextSwarm);
+        
+    }
 
 	private IEnumerator SpawnEnemies(Swarm currentSwarm, GameObject swarmParent = null)
 	{
